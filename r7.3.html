@@ -1,0 +1,1104 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Расписание</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+        }
+
+        body {
+            background: #f0f2f5;
+            padding: 16px;
+            max-width: 500px;
+            margin: 0 auto;
+            transition: background 0.3s, color 0.3s;
+        }
+        body.dark {
+            background: #1a1a2e;
+            color: #e0e0e0;
+        }
+        body.dark .pair-card {
+            background: #2d2d44;
+            color: #e0e0e0;
+        }
+        body.dark .pair-card .subject {
+            color: #ffffff;
+        }
+        body.dark .pair-card .teacher {
+            color: #b0b0c0;
+        }
+        body.dark .day-title {
+            border-bottom-color: #3d3d5a;
+        }
+        body.dark .day-title h2 {
+            color: #ffffff;
+        }
+        body.dark .day-nav button {
+            background: #2d2d44;
+            color: #b0b0c0;
+        }
+        body.dark .day-nav button.active {
+            background: #6c5ce7;
+            color: white;
+        }
+        body.dark .week-switch button {
+            background: #2d2d44;
+            color: #b0b0c0;
+            border-color: #3d3d5a;
+        }
+        body.dark .week-switch button.active {
+            border-color: #6c5ce7;
+            background: #3d3d5a;
+            color: #6c5ce7;
+        }
+        body.dark .week-switch button.real-week {
+            border-color: #00b894 !important;
+            color: #ffffff !important;
+        }
+        body.dark .week-switch button.real-week.active {
+            border-color: #00b894 !important;
+            background: #00b894 !important;
+            color: white !important;
+        }
+        body.dark .header .group {
+            color: #ffffff;
+        }
+        body.dark .pair-card.current {
+            background: #1a3d2a;
+        }
+        body.dark .pair-card.next {
+            background: #3d3a1a;
+        }
+        body.dark .empty-day {
+            color: #8888aa;
+        }
+        body.dark .timer-container {
+            background: #2d2d44;
+        }
+        body.dark .day-nav-arrow {
+            background: #2d2d44;
+            color: #e0e0e0;
+        }
+        body.dark .day-nav button.today-btn {
+            border-color: #00b894;
+        }
+        body.dark .subgroup-badge {
+            background: #3d3a5a;
+            color: #b0a0e0;
+        }
+        body.dark .note-input {
+            background: #3d3d5a;
+            color: #e0e0e0;
+            border-color: #4d4d6a;
+        }
+        body.dark .note-input::placeholder {
+            color: #8888aa;
+        }
+        body.dark .map-button {
+            background: #6c5ce7;
+        }
+        body.dark .map-modal {
+            background: #2d2d44;
+        }
+        body.dark .map-header {
+            border-bottom-color: #3d3d5a;
+            color: #e0e0e0;
+        }
+        body.dark .map-close {
+            color: #b0b0c0;
+        }
+        body.dark .map-close:hover {
+            background: rgba(255,255,255,0.05);
+        }
+
+        /* ===== ШАПКА ===== */
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+            padding: 0 4px;
+        }
+        .header .group {
+            font-weight: 700;
+            font-size: 1.1rem;
+            color: #1a1a2e;
+        }
+        .header-controls {
+            display: flex;
+            gap: 8px;
+            align-items: center;
+        }
+        .theme-toggle {
+            background: none;
+            border: none;
+            font-size: 1.3rem;
+            cursor: pointer;
+            padding: 4px 8px;
+            border-radius: 30px;
+            background: rgba(108, 92, 231, 0.1);
+            transition: 0.3s;
+        }
+        .theme-toggle:hover {
+            background: rgba(108, 92, 231, 0.2);
+        }
+
+        /* ===== ТАЙМЕР ===== */
+        .timer-container {
+            background: #f8f4e8;
+            border-radius: 16px;
+            padding: 14px 18px;
+            margin: 12px 0 16px;
+            color: #2d3436;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 8px;
+            transition: background 0.3s, color 0.3s;
+        }
+        body.dark .timer-container {
+            background: #2d2d44;
+            color: #e0e0e0;
+        }
+        .timer-container .timer-label {
+            font-size: 0.8rem;
+            opacity: 0.8;
+        }
+        .timer-container .timer-display {
+            font-size: 1.8rem;
+            font-weight: 700;
+            font-variant-numeric: tabular-nums;
+            min-width: 140px;
+            text-align: right;
+            letter-spacing: 2px;
+        }
+        .timer-container .timer-display.ongoing {
+            color: #e17055;
+        }
+        .timer-container .timer-display.waiting {
+            color: #fdcb6e;
+        }
+        .timer-container .timer-display.done {
+            color: #00b894;
+        }
+        .timer-container .timer-pair-name {
+            font-size: 0.75rem;
+            opacity: 0.7;
+            width: 100%;
+        }
+
+        /* ===== ПЕРЕКЛЮЧЕНИЕ НЕДЕЛЬ ===== */
+        .week-switch {
+            display: flex;
+            gap: 8px;
+            margin: 16px 0 12px;
+        }
+        .week-switch button {
+            flex: 1;
+            padding: 10px;
+            border: 2px solid #dfe6e9;
+            border-radius: 12px;
+            background: white;
+            font-weight: 700;
+            font-size: 0.85rem;
+            color: #636e72;
+            cursor: pointer;
+            transition: 0.2s;
+            position: relative;
+        }
+        .week-switch button.active {
+            border-color: #6c5ce7;
+            background: #f8f7ff;
+            color: #6c5ce7;
+        }
+        .week-switch button.real-week {
+            border-color: #00b894 !important;
+            color: #2d3436 !important;
+        }
+        .week-switch button.real-week.active {
+            border-color: #00b894 !important;
+            background: #00b894 !important;
+            color: white !important;
+        }
+        .week-switch button:active { transform: scale(0.97); }
+
+        /* ===== НАВИГАЦИЯ ПО ДНЯМ ===== */
+        .day-nav {
+            display: flex;
+            gap: 6px;
+            margin-bottom: 16px;
+            overflow-x: auto;
+            padding: 2px 0;
+            -webkit-overflow-scrolling: touch;
+            justify-content: center;
+            min-height: 50px;
+        }
+        .day-nav button {
+            flex: 1;
+            min-width: 44px;
+            padding: 8px 0;
+            border: none;
+            border-radius: 12px;
+            background: white;
+            font-weight: 600;
+            font-size: 0.75rem;
+            color: #636e72;
+            cursor: pointer;
+            transition: 0.2s;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.04);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 2px;
+        }
+        .day-nav button .day-num {
+            font-size: 0.55rem;
+            opacity: 0.5;
+            font-weight: 400;
+        }
+        .day-nav button.active {
+            background: #6c5ce7;
+            color: white;
+            box-shadow: 0 4px 12px rgba(108, 92, 231, 0.3);
+        }
+        .day-nav button.today-btn {
+            border: 2px solid #00b894;
+        }
+        body.dark .day-nav button.today-btn {
+            border-color: #00b894;
+        }
+
+        /* ===== СТРЕЛКИ ПОД РАСПИСАНИЕМ ===== */
+        .day-nav-wrapper {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin: 12px 0 16px;
+            justify-content: center;
+        }
+        .day-nav-arrow {
+            background: white;
+            border: none;
+            border-radius: 12px;
+            padding: 8px 16px;
+            font-size: 1rem;
+            font-weight: 700;
+            cursor: pointer;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.04);
+            transition: 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            color: #2d3436;
+        }
+        body.dark .day-nav-arrow {
+            background: #2d2d44;
+            color: #e0e0e0;
+        }
+        .day-nav-arrow:active {
+            transform: scale(0.95);
+        }
+        .day-nav-arrow .arrow-label {
+            font-size: 0.7rem;
+            opacity: 0.6;
+        }
+        .day-nav-center {
+            font-weight: 600;
+            font-size: 0.9rem;
+            color: #2d3436;
+            min-width: 80px;
+            text-align: center;
+        }
+        body.dark .day-nav-center {
+            color: #e0e0e0;
+        }
+
+        /* ===== ЗАГОЛОВОК ДНЯ ===== */
+        .day-title {
+            display: flex;
+            justify-content: space-between;
+            align-items: baseline;
+            padding: 0 4px 12px 4px;
+            border-bottom: 2px solid #e9ecef;
+            margin-bottom: 16px;
+        }
+        .day-title h2 {
+            font-size: 1.4rem;
+            color: #1a1a2e;
+        }
+        .day-title .pair-count {
+            font-size: 0.8rem;
+            color: #b2bec3;
+            font-weight: 500;
+        }
+
+        /* ===== КАРТОЧКА ПАРЫ ===== */
+        .pair-card {
+            background: white;
+            border-radius: 16px;
+            padding: 14px 16px;
+            margin-bottom: 10px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+            border-left: 4px solid #dfe6e9;
+            transition: 0.3s;
+        }
+        .pair-card.current {
+            border-left-color: #00b894 !important;
+            background: #f0faf8;
+        }
+        .pair-card.next {
+            border-left-color: #fdcb6e !important;
+            background: #fffdf0;
+        }
+        .pair-card .time-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 6px;
+        }
+        .pair-card .time {
+            font-weight: 700;
+            font-size: 0.9rem;
+            color: #2d3436;
+        }
+        body.dark .pair-card .time {
+            color: #e0e0e0;
+        }
+        .pair-card .type-badge {
+            font-size: 0.6rem;
+            font-weight: 700;
+            padding: 2px 12px;
+            border-radius: 30px;
+            background: #dfe6e9;
+            color: #2d3436;
+            letter-spacing: 0.3px;
+        }
+        .type-badge.practice { background: #a29bfe; color: white; }
+        .type-badge.lecture { background: #dfe6e9; color: #2d3436; }
+        .type-badge.lab { background: #fd79a8; color: white; }
+        body.dark .type-badge.lecture {
+            background: #3d3d5a;
+            color: #e0e0e0;
+        }
+
+        .pair-card .subject {
+            font-weight: 700;
+            font-size: 1.1rem;
+            color: #1a1a2e;
+            margin-bottom: 4px;
+        }
+        
+        /* ===== ПОДГРУППА ===== */
+        .subgroup-badge {
+            font-size: 0.7rem;
+            font-weight: 600;
+            color: #6c5ce7;
+            background: #f0edff;
+            padding: 2px 12px;
+            border-radius: 30px;
+            display: inline-block;
+            margin: 4px 0 6px;
+        }
+
+        .pair-card .teacher {
+            font-size: 0.8rem;
+            color: #636e72;
+        }
+        .pair-card .room {
+            font-size: 0.8rem;
+            color: #00b894;
+            font-weight: 600;
+            background: #e8f8f5;
+            padding: 2px 12px;
+            border-radius: 30px;
+            display: inline-block;
+        }
+        body.dark .pair-card .room {
+            background: #1a3d3a;
+            color: #6cce7a;
+        }
+        .pair-card .footer-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 6px;
+            flex-wrap: wrap;
+            gap: 4px;
+        }
+
+        /* ===== ЗАМЕТКИ (МНОГОСТРОЧНЫЕ) ===== */
+        .note-area {
+            margin-top: 10px;
+            padding-top: 10px;
+            border-top: 1px dashed #e9ecef;
+        }
+        body.dark .note-area {
+            border-top-color: #3d3d5a;
+        }
+        .note-input {
+            width: 100%;
+            padding: 8px 10px;
+            border: 1px solid #dfe6e9;
+            border-radius: 8px;
+            font-size: 0.8rem;
+            line-height: 1.5;
+            color: #2d3436;
+            background: #f8f9fa;
+            transition: 0.2s;
+            outline: none;
+            resize: vertical;
+            min-height: 56px;
+            max-height: 200px;
+            overflow-y: auto;
+            font-family: inherit;
+        }
+        .note-input:focus {
+            border-color: #6c5ce7;
+            box-shadow: 0 0 0 2px rgba(108, 92, 231, 0.1);
+        }
+        .note-input::placeholder {
+            color: #b2bec3;
+            font-style: italic;
+        }
+        .note-saved {
+            display: block;
+            font-size: 0.65rem;
+            color: #00b894;
+            margin-top: 4px;
+            opacity: 0;
+            transition: opacity 0.3s;
+            text-align: right;
+        }
+        .note-saved.show {
+            opacity: 1;
+        }
+
+        /* ===== ПУСТОЕ СОСТОЯНИЕ ===== */
+        .empty-day {
+            text-align: center;
+            padding: 50px 20px;
+            color: #b2bec3;
+        }
+        .empty-day .big-emoji {
+            font-size: 3rem;
+            display: block;
+            margin-bottom: 12px;
+        }
+
+        /* ===== КНОПКА КАРТЫ ===== */
+        .map-button {
+            display: block;
+            width: 100%;
+            padding: 14px;
+            background: #6c5ce7;
+            color: white;
+            border: none;
+            border-radius: 16px;
+            font-size: 1rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: 0.3s;
+            margin: 16px 0 4px;
+            box-shadow: 0 4px 12px rgba(108, 92, 231, 0.3);
+        }
+        .map-button:active {
+            transform: scale(0.97);
+        }
+
+        /* ===== МОДАЛЬНОЕ ОКНО С КАРТОЙ ===== */
+        .map-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.7);
+            backdrop-filter: blur(8px);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            padding: 20px;
+        }
+        .map-overlay.active {
+            display: flex;
+        }
+        .map-modal {
+            background: white;
+            border-radius: 24px;
+            max-width: 600px;
+            width: 100%;
+            max-height: 90vh;
+            overflow: hidden;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            animation: mapFadeIn 0.3s ease;
+        }
+        @keyframes mapFadeIn {
+            from {
+                opacity: 0;
+                transform: scale(0.9);
+            }
+            to {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+        .map-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 16px 20px;
+            border-bottom: 1px solid #e9ecef;
+            font-weight: 700;
+            font-size: 1.1rem;
+            color: #2d3436;
+        }
+        .map-close {
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: #636e72;
+            padding: 4px 8px;
+            border-radius: 8px;
+            transition: 0.2s;
+        }
+        .map-close:hover {
+            background: rgba(0,0,0,0.05);
+        }
+        .map-content {
+            padding: 20px;
+            overflow-y: auto;
+            max-height: 70vh;
+        }
+        .map-content img {
+            width: 100%;
+            height: auto;
+            border-radius: 12px;
+            display: block;
+        }
+
+        @media (max-width: 400px) {
+            .day-nav button { font-size: 0.65rem; min-width: 36px; padding: 6px 0; }
+            .pair-card { padding: 12px; }
+            .pair-card .subject { font-size: 0.95rem; }
+            .timer-container .timer-display { font-size: 1.3rem; min-width: 100px; }
+            .day-nav-arrow { padding: 6px 12px; font-size: 0.8rem; }
+            .map-modal { max-width: 100%; }
+            .map-content { max-height: 60vh; }
+            .note-input { font-size: 0.7rem; min-height: 48px; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- ===== ШАПКА ===== -->
+    <div class="header">
+        <span class="group"> Станки 52</span>
+        <div class="header-controls">
+            <button class="theme-toggle" onclick="toggleTheme()" title="Тёмная тема">🌙</button>
+        </div>
+    </div>
+
+    <!-- ===== ПЕРЕКЛЮЧАТЕЛЬ НЕДЕЛЬ ===== -->
+    <div class="week-switch">
+        <button data-week="1" onclick="setWeek(1)"> 1 неделя</button>
+        <button data-week="2" onclick="setWeek(2)"> 2 неделя</button>
+    </div>
+
+    <!-- ===== ТАЙМЕР ===== -->
+    <div class="timer-container" id="timerContainer">
+        <div>
+            <div class="timer-label" id="timerLabel">До начала пары</div>
+            <div class="timer-pair-name" id="timerPairName">Следующая: —</div>
+        </div>
+        <div class="timer-display" id="timerDisplay">--:--:--</div>
+    </div>
+
+    <!-- ===== НАВИГАЦИЯ ПО ДНЯМ ===== -->
+    <div class="day-nav" id="dayNav"></div>
+
+    <!-- ===== СТРЕЛКИ ПОД РАСПИСАНИЕМ ===== -->
+    <div class="day-nav-wrapper">
+        <button class="day-nav-arrow" onclick="changeDay(-1)">
+            ◀ <span class="arrow-label">Назад</span>
+        </button>
+        <span class="day-nav-center" id="dayNavCenter">Сегодня</span>
+        <button class="day-nav-arrow" onclick="changeDay(1)">
+            <span class="arrow-label">Вперёд</span> ▶
+        </button>
+    </div>
+
+    <!-- ===== ЗАГОЛОВОК ДНЯ ===== -->
+    <div class="day-title">
+        <h2 id="dayTitle">Понедельник</h2>
+        <span class="pair-count" id="pairCount">4 пары</span>
+    </div>
+
+    <!-- ===== КОНТЕЙНЕР ПАР ===== -->
+    <div id="pairsContainer"></div>
+
+    <!-- ===== КНОПКА КАРТЫ ===== -->
+    <button class="map-button" onclick="openMap()">
+         Карта корпусов
+    </button>
+
+    <!-- ===== МОДАЛЬНОЕ ОКНО С КАРТОЙ ===== -->
+    <div class="map-overlay" id="mapOverlay" onclick="closeMap()">
+        <div class="map-modal" onclick="event.stopPropagation()">
+            <div class="map-header">
+                <span> Карта корпусов</span>
+                <button class="map-close" onclick="closeMap()">✕</button>
+            </div>
+            <div class="map-content">
+                <img src="https://static.bntu.by/bntu/new/content/content_02d02994e681cd7b0475c5565dbda408.png%7CresizeToWidth=1200" alt="Карта корпусов" id="mapImage">
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // ================================================================
+        // 1. ДАННЫЕ РАСПИСАНИЯ
+        // ================================================================
+
+        const schedule = {
+            1: {
+                'Понедельник': [
+                    { time: '13:55 – 15:30', name: 'Информатика', type: 'Лабораторная', teacher: 'ст.пр. Кавальчук О.Н.', room: 'а.406 к.6', subgroup: '1-я подгруппа' },
+                    { time: '15:40 – 17:15', name: 'Физкультура', type: ' ', teacher: 'ст.пр. Кришталь С.А., ст.пр. Панова Е.В.', room: 'к.11Б' },
+                    { time: '17:45 – 19:20', name: 'Инженерная графика', type: 'Лекция', teacher: 'ст.пр. Кулащик Н.Ф.', room: 'а.4п к.8' },
+                    { time: '19:30 – 21:05', name: 'Технология конструкционных материалов', type: 'Лабораторная', teacher: 'ст.пр. Чигринов В.Е., преп. Пузынин Я.С.', room: 'лаб.12 к.7', subgroup: '2-я подгруппа' },
+                ],
+                'Вторник': [
+                    { time: '12:00 – 13:35', name: 'ОИЗ. Инженерная графика', type: 'Практика', teacher: '?', room: 'а.510 к.8' },
+                    { time: '13:55 – 15:30', name: 'Английский язык', type: 'Практика', teacher: 'ст.пр. Лапко О.А.', room: 'а.430 к.18' },
+                    { time: '15:40 – 17:15', name: 'Математика', type: 'Лекция', teacher: 'доц. Крушевский Е.А.', room: 'а.308 к.6' },
+                    { time: '17:45 – 19:20', name: 'Физика', type: 'Лекция', teacher: 'доц. Бобученко Д.С.', room: 'а.2п к.17' },
+                    { time: '19:30 – 21:05', name: 'ОИЗ. Инженерная графика', type: 'Лекция', teacher: 'ст.пр. Джежора С.В.', room: 'а.4п к.8' },
+                ],
+                'Среда': [
+                    { time: '?12:00 – 13:35?', name: 'Химия', type: 'Практика', teacher: 'доц. Стрелкова Е.В.', room: 'а.508а к.11' },
+                    { time: '15:40 – 17:15', name: 'Химия', type: 'Лекция', teacher: 'доц. Стрелкова Е.В.', room: 'а.2п к.17' },
+                    { time: '17:45 – 19:20', name: 'Информатика', type: 'Лекция', teacher: 'ст.пр. Кавальчук О.Н.', room: 'а.2п к.17' },
+                    { time: '19:30 – 21:05', name: 'ОИЗ.Физика', type: 'Лекция', teacher: 'доц. Бобученко Д.С.', room: 'а.2п к.17' },
+                ],
+                'Четверг': [
+                    { time: '12:00 – 13:35', name: 'Профессиональное обучение по профессиям рабочих', type: 'Лабораторная', teacher: '?', room: '?', subgroup: '1-я подгруппа' },
+                    { time: '13:55 – 15:30', name: 'Профессиональное обучение по профессиям рабочих', type: 'Лабораторная', teacher: '?', room: '?', subgroup: '1-я подгруппа' },
+                    { time: '15:40 – 17:15', name: 'Физкультура', type: ' ', teacher: 'ст.пр. Кришталь С.А., ст.пр. Панова Е.В.', room: 'к.11Б' },
+                    { time: '17:45 – 19:20', name: 'Инженерная графика', type: 'Практика', teacher: '?', room: 'а.510 к.8' },
+                    { time: '19:30 – 21:05', name: 'ОИЗ.Физика', type: 'Практика', teacher: 'доц. Бобученко Д.С.', room: 'а.203 к.17' },
+                ],
+                'Пятница': [
+                    { time: '13:55 – 15:30', name: 'Физика', type: 'Практика', teacher: 'доц. Бобученко Д.С.', room: 'а.201 к.17' },
+                    { time: '15:40 – 17:15', name: 'Математика', type: 'Практика', teacher: 'ст.пр. Доронина А.В.', room: 'а.221 к.' },
+                    { time: '17:45 – 19:20', name: 'Информатика', type: 'Лабораторная', teacher: 'ст.пр. Кавальчук О.Н.', room: 'а.406 к.6', subgroup: '1-я подгруппа'  },
+                    { time: '17:45 – 19:20', name: 'Технология конструкционных материалов', type: 'Лабораторная', teacher: 'ст.пр. Чигринов В.Е., преп. Пузынин Я.С.', room: 'лаб.12 к.7', subgroup: '2-я подгруппа' },
+                    { time: '19:30 – 21:05', name: 'Химия', type: 'Лабораторная', teacher: 'доц. Стрелкова Е.В.', room: 'лаб.512 к.11', subgroup: '1-я подгруппа' },
+                    { time: '19:30 – 21:05', name: 'Информатика', type: 'Лабораторная', teacher: 'доц. Стрелкова Е.В.', room: 'а.406 к.6', subgroup: '2-я подгруппа' },
+                ],
+                'Суббота': [
+                    { time: '12:00 – 13:35', name: 'Технология конструкционных материалов', type: 'Лекция', teacher: 'преп. Мамонов А.М.', room: 'а.4п к.8' },
+                    { time: '13:55 – 15:30', name: 'Английский язык', type: 'Практика', teacher: 'ст.пр. Лапко О.А.', room: 'а.430 к.18' },
+                    { time: '15:40 – 17:15', name: 'Введение в инженерное образование', type: 'Практика', teacher: '?', room: 'а.307 к.6' },
+                ]
+            },
+            2: {
+                'Понедельник': [
+                    { time: '13:55 – 15:30', name: 'Информатика', type: 'Лабораторная', teacher: 'ст.пр. Кавальчук О.Н.', room: 'а.406 к.6', subgroup: '2-я подгруппа'  },
+                    { time: '15:40 – 17:15', name: 'Физкультура', type: ' ', teacher: 'ст.пр. Кришталь С.А., ст.пр. Панова Е.В.', room: 'к.11Б' },
+                    { time: '17:45 – 19:20', name: 'Инженерная графика', type: 'Лекция', teacher: 'ст.пр. Кулащик Н.Ф.', room: 'а.4п к.8' },
+                    { time: '19:30 – 21:05', name: 'Технология конструкционных материалов', type: 'Лабораторная', teacher: 'ст.пр. Чигринов В.Е., преп. Пузынин Я.С.', room: 'лаб.12 к.7', subgroup: '1-я подгруппа' },
+                ],
+                'Вторник': [
+                    { time: '13:55 – 15:30', name: 'Английский язык', type: 'Практика', teacher: 'ст.пр. Лапко О.А.', room: 'а.430 к.18' },
+                    { time: '15:40 – 17:15', name: 'Математика', type: 'Лекция', teacher: 'доц. Крушевский Е.А.', room: 'а.308 к.6' },
+                    { time: '17:45 – 19:20', name: 'Физика', type: 'Лекция', teacher: 'доц. Бобученко Д.С.', room: 'а.2п к.17' },
+                    { time: '19:30 – 21:05', name: 'ОИЗ. Математика', type: 'Лекция', teacher: 'доц. Крушевский Е.А.', room: 'а.308 к.6' },
+                ],
+                'Среда': [
+                    { time: '13:55 – 15:30', name: 'Инженерная графика', type: 'Практика', teacher: '?', room: 'а.511 к.8' },
+                    { time: '15:40 – 17:15', name: 'Химия', type: 'Лекция', teacher: 'доц. Стрелкова Е.В.', room: 'а.2п к.17' },
+                    { time: '17:45 – 19:20', name: 'Физика', type: 'Лекция', teacher: 'доц. Бобученко Д.С.', room: 'а.2п к.17' },
+                    { time: '19:30 – 21:05', name: 'Введение в инженерное образование', type: 'Лекция', teacher: '?', room: 'а.405 к.6' },
+                ],
+                'Четверг': [
+                    { time: '12:00 – 13:35', name: 'Физика', type: 'Лабораторная', teacher: 'доц. Бобученко Д.С., ст.пр. Гарновская И.И.', room: 'лаб.412 к.17', subgroup: '2-я подгруппа' },
+                    { time: '13:55 – 15:30', name: 'Физика', type: 'Лабораторная', teacher: 'доц. Бобученко Д.С., ст.пр. Гарновская И.И.', room: 'лаб.412 к.17', subgroup: '2-я подгруппа' },
+                    { time: '15:40 – 17:15', name: 'Физкультура', type: ' ', teacher: 'ст.пр. Кришталь С.А., ст.пр. Панова Е.В.', room: 'к.11Б' },
+                    { time: '17:45 – 19:20', name: 'Инженерная графика', type: 'Практика', teacher: '?', room: 'а.510 к.8' },
+                    { time: '19:30 – 21:05', name: 'ОИЗ.Математика', type: 'Практика', teacher: 'ст.пр. Доронина А.В.', room: 'а.220 к.6' },
+                ],
+                'Пятница': [
+                    { time: '13:55 – 15:30', name: 'Физика', type: 'Практика', teacher: 'доц. Бобученко Д.С.', room: 'а.201 к.17' },
+                    { time: '15:40 – 17:15', name: 'Математика', type: 'Практика', teacher: 'ст.пр. Доронина А.В.', room: 'а.221к.6' },
+                    { time: '17:45 – 19:20', name: 'Технология конструкционных материалов', type: 'Лабораторная', teacher: 'ст.пр. Чигринов В.Е., преп. Пузынин Я.С.', room: 'лаб.12 к.7', subgroup: '1-я подгруппа' },
+                    { time: '17:45 – 19:20', name: 'Информатика', type: 'Лабораторная', teacher: 'ст.пр. Кавальчук О.Н.', room: 'а.406 к.6', subgroup: '2-я подгруппа' },
+                    { time: '19:45 – 21:05', name: 'Информатика', type: 'Лабораторная', teacher: 'ст.пр. Кавальчук О.Н.', room: 'а.406 к.6', subgroup: '1-я подгруппа' },
+                    { time: '19:30 – 21:05', name: 'Химия', type: 'Лабораторная', teacher: 'доц. Стрелкова Е.В.', room: 'лаб.512 к.11', subgroup: '2-я подгруппа' },
+                ],
+                'Суббота': [
+                    { time: '12:00 – 13:35', name: 'Технология конструкционных материалов', type: 'Лекция', teacher: 'преп. Мамонов А.М.', room: 'а.4п к.8'},
+                    { time: '13:55 – 15:30', name: 'Профессиональное обучение по профессиям рабочих', type: 'Лабораторная', teacher: '?', room: '?', subgroup: '2-я подгруппа' },
+                    { time: '15:40 – 17:15', name: 'Профессиональное обучение по профессиям рабочих', type: 'Лабораторная', teacher: '?', room: '?', subgroup: '2-я подгруппа' },
+                ]
+            }
+        };
+
+        // ================================================================
+        // 2. СОСТОЯНИЕ
+        // ================================================================
+        const dayNames = ['Воскресенье', 'Понедельник', 'Вторник', 'Среда', 'Четверг', 'Пятница', 'Суббота'];
+        const shortDayNames = ['Вс', 'Пн', 'Вт', 'Ср', 'Чт', 'Пт', 'Сб'];
+        
+        function getRealWeek() {
+            const start = new Date(2026, 8, 1);
+            const now = new Date();
+            const diff = Math.floor((now - start) / (7 * 24 * 60 * 60 * 1000));
+            return (diff % 2 === 0) ? 1 : 2;
+        }
+        
+        const realWeek = getRealWeek();
+        const today = new Date().getDay();
+        const realDayIndex = today === 0 ? 6 : today;
+        
+        let currentWeek = realWeek;
+        let currentDayIndex = realDayIndex;
+        let isDarkTheme = false;
+
+        console.log(`📅 Реальная неделя: ${realWeek}, реальный день: ${dayNames[realDayIndex]}`);
+
+        // ================================================================
+        // 3. ТЕМНАЯ ТЕМА
+        // ================================================================
+        function toggleTheme() {
+            isDarkTheme = !isDarkTheme;
+            document.body.classList.toggle('dark', isDarkTheme);
+            document.querySelector('.theme-toggle').textContent = isDarkTheme ? '☀️' : '🌙';
+            localStorage.setItem('theme', isDarkTheme ? 'dark' : 'light');
+        }
+
+        if (localStorage.getItem('theme') === 'dark') {
+            isDarkTheme = true;
+            document.body.classList.add('dark');
+            document.querySelector('.theme-toggle').textContent = '☀️';
+        }
+
+        // ================================================================
+        // 4. ТАЙМЕР
+        // ================================================================
+        function updateTimer() {
+            const now = new Date();
+            const currentMinutes = now.getHours() * 60 + now.getMinutes();
+            const today = now.getDay();
+            const todayIndex = today === 0 ? 6 : today;
+            
+            const timerDisplay = document.getElementById('timerDisplay');
+            const timerLabel = document.getElementById('timerLabel');
+            const timerPairName = document.getElementById('timerPairName');
+
+            const weekData = schedule[realWeek];
+            if (!weekData) {
+                timerDisplay.textContent = '--:--:--';
+                timerDisplay.className = 'timer-display done';
+                timerLabel.textContent = '⚠️ Ошибка';
+                timerPairName.textContent = 'Нет данных';
+                return;
+            }
+            
+            const dayName = dayNames[todayIndex];
+            const pairs = weekData[dayName] || [];
+            
+            if (pairs.length === 0) {
+                timerDisplay.textContent = '';
+                timerDisplay.className = 'timer-display done';
+                timerLabel.textContent = 'Пар нет';
+                timerPairName.textContent = 'Пора домой';
+                return;
+            }
+
+            let currentPair = null;
+            let nextPair = null;
+
+            for (let i = 0; i < pairs.length; i++) {
+                const pair = pairs[i];
+                const [start, end] = pair.time.split(' – ');
+                const [startH, startM] = start.split(':').map(Number);
+                const [endH, endM] = end.split(':').map(Number);
+                const startTotal = startH * 60 + startM;
+                const endTotal = endH * 60 + endM;
+
+                if (currentMinutes >= startTotal && currentMinutes < endTotal) {
+                    currentPair = pair;
+                    break;
+                }
+                if (currentMinutes < startTotal && !nextPair) {
+                    nextPair = pair;
+                }
+            }
+
+            if (currentPair) {
+                const [start, end] = currentPair.time.split(' – ');
+                const [endH, endM] = end.split(':').map(Number);
+                
+                const nowSeconds = now.getHours() * 3600 + now.getMinutes() * 60 + now.getSeconds();
+                const endSeconds = endH * 3600 + endM * 60;
+                const remainSeconds = endSeconds - nowSeconds;
+                
+                const hours = Math.floor(remainSeconds / 3600);
+                const mins = Math.floor((remainSeconds % 3600) / 60);
+                const secs = remainSeconds % 60;
+                
+                timerDisplay.textContent = `${String(hours).padStart(2, '0')}:${String(mins).padStart(2, '0')}:${String(secs).padStart(2, '0')}`;
+                timerDisplay.className = 'timer-display ongoing';
+                timerLabel.textContent = '🔥 Идёт пара, осталось';
+                timerPairName.textContent = `${currentPair.name} (${currentPair.type}) · ${currentPair.room}`;
+                return;
+            }
+
+            if (nextPair) {
+                const [start, end] = nextPair.time.split(' – ');
+                const [startH, startM] = start.split(':').map(Number);
+                
+                const nowSeconds = now.getHours() * 3600 + now.getMinutes() * 60 + now.getSeconds();
+                const startSeconds = startH * 3600 + startM * 60;
+                const waitSeconds = startSeconds - nowSeconds;
+                
+                const hours = Math.floor(waitSeconds / 3600);
+                const mins = Math.floor((waitSeconds % 3600) / 60);
+                const secs = waitSeconds % 60;
+                
+                timerDisplay.textContent = `${String(hours).padStart(2, '0')}:${String(mins).padStart(2, '0')}:${String(secs).padStart(2, '0')}`;
+                timerDisplay.className = 'timer-display waiting';
+                timerLabel.textContent = 'До начала пары';
+                timerPairName.textContent = `${nextPair.name} (${nextPair.type}) · ${nextPair.room}`;
+                return;
+            }
+
+            timerDisplay.textContent = '✅';
+            timerDisplay.className = 'timer-display done';
+            timerLabel.textContent = 'Все пары закончились';
+            timerPairName.textContent = '';
+        }
+
+        // ================================================================
+        // 5. ЗАМЕТКИ (localStorage)
+        // ================================================================
+        
+        // Уникальный ID для каждой пары (день + время + название)
+        function getPairId(pair, dayName, weekNum) {
+            return `${weekNum}_${dayName}_${pair.time}_${pair.name}`.replace(/\s/g, '_');
+        }
+
+        // Сохранить заметку
+        function saveNote(pairId, text) {
+            const notes = JSON.parse(localStorage.getItem('userNotes') || '{}');
+            if (text.trim() === '') {
+                delete notes[pairId];
+            } else {
+                notes[pairId] = text.trim();
+            }
+            localStorage.setItem('userNotes', JSON.stringify(notes));
+            
+            // Показать индикатор сохранения
+            const indicator = document.getElementById(`note_saved_${pairId}`);
+            if (indicator) {
+                indicator.classList.add('show');
+                setTimeout(() => indicator.classList.remove('show'), 1500);
+            }
+        }
+
+        // Загрузить заметку
+        function loadNote(pairId) {
+            const notes = JSON.parse(localStorage.getItem('userNotes') || '{}');
+            return notes[pairId] || '';
+        }
+
+        // ================================================================
+        // 6. ОТРИСОВКА
+        // ================================================================
+
+        function render() {
+            const weekData = schedule[currentWeek];
+            if (!weekData) return;
+
+            const dayName = dayNames[currentDayIndex];
+            const pairs = weekData[dayName] || [];
+
+            document.querySelectorAll('.week-switch button').forEach(b => {
+                b.classList.remove('real-week');
+                const weekNum = parseInt(b.dataset.week);
+                if (weekNum === realWeek) {
+                    b.classList.add('real-week');
+                }
+            });
+
+            const nav = document.getElementById('dayNav');
+            nav.innerHTML = '';
+            for (let i = 1; i <= 6; i++) {
+                const btn = document.createElement('button');
+                const isActive = i === currentDayIndex;
+                const isToday = i === realDayIndex;
+                btn.innerHTML = `${shortDayNames[i]} <span class="day-num">${isActive ? '●' : ''}</span>`;
+                if (isActive) btn.classList.add('active');
+                if (isToday) btn.classList.add('today-btn');
+                btn.onclick = () => { currentDayIndex = i; render(); updateTimer(); };
+                nav.appendChild(btn);
+            }
+
+            const centerEl = document.getElementById('dayNavCenter');
+            if (currentDayIndex === realDayIndex && currentWeek === realWeek) {
+                centerEl.textContent = 'Сегодня';
+            } else {
+                centerEl.textContent = dayNames[currentDayIndex];
+            }
+
+            document.getElementById('dayTitle').textContent = dayName;
+            document.getElementById('pairCount').textContent = pairs.length + ' пары';
+
+            const container = document.getElementById('pairsContainer');
+            container.innerHTML = '';
+
+            if (pairs.length === 0) {
+                container.innerHTML = `
+                    <div class="empty-day">
+                        <span class="big-emoji"></span>
+                        Пар нет
+                        <br><span style="font-size:0.8rem;">Можно отдохнуть</span>
+                    </div>
+                `;
+                return;
+            }
+
+            const now = new Date();
+            const currentMinutes = now.getHours() * 60 + now.getMinutes();
+            let foundCurrent = false;
+
+            const isRealDay = (currentDayIndex === realDayIndex);
+            const isRealWeek = (currentWeek === realWeek);
+            const shouldHighlight = isRealDay && isRealWeek;
+
+            pairs.forEach((pair) => {
+                const card = document.createElement('div');
+                card.className = 'pair-card';
+
+                if (shouldHighlight) {
+                    const [start, end] = pair.time.split(' – ');
+                    const [startH, startM] = start.split(':').map(Number);
+                    const [endH, endM] = end.split(':').map(Number);
+                    const startTotal = startH * 60 + startM;
+                    const endTotal = endH * 60 + endM;
+
+                    if (currentMinutes >= startTotal && currentMinutes < endTotal) {
+                        card.classList.add('current');
+                        foundCurrent = true;
+                    } else if (!foundCurrent && currentMinutes < startTotal) {
+                        card.classList.add('next');
+                        foundCurrent = true;
+                    }
+                }
+
+                let typeClass = 'lecture';
+                if (pair.type.includes('Практик')) typeClass = 'practice';
+                else if (pair.type.includes('Лаб')) typeClass = 'lab';
+
+                // Генерируем ID для заметки
+                const pairId = getPairId(pair, dayName, currentWeek);
+                const savedNote = loadNote(pairId);
+
+                card.innerHTML = `
+                    <div class="time-row">
+                        <span class="time">${pair.time}</span>
+                        <span class="type-badge ${typeClass}">${pair.type}</span>
+                    </div>
+                    <div class="subject">${pair.name}</div>
+                    ${pair.subgroup ? `<div class="subgroup-badge"> ${pair.subgroup}</div>` : ''}
+                    <div class="footer-row">
+                        <span class="teacher"> ${pair.teacher}</span>
+                        <span class="room"> ${pair.room}</span>
+                    </div>
+                    <div class="note-area">
+                        <textarea class="note-input" 
+                                  id="note_input_${pairId}"
+                                  placeholder=" Ваша заметка..."
+                                  onchange="saveNote('${pairId}', this.value)"
+                        >${savedNote}</textarea>
+                        <span class="note-saved" id="note_saved_${pairId}">✅ Сохранено</span>
+                    </div>
+                `;
+                container.appendChild(card);
+            });
+        }
+
+        // ================================================================
+        // 7. ПЕРЕКЛЮЧЕНИЕ
+        // ================================================================
+        function changeDay(delta) {
+            currentDayIndex += delta;
+            if (currentDayIndex < 1) currentDayIndex = 6;
+            if (currentDayIndex > 6) currentDayIndex = 1;
+            render();
+        }
+
+        function setWeek(week) {
+            currentWeek = week;
+            document.querySelectorAll('.week-switch button').forEach(b => b.classList.remove('active'));
+            document.querySelector(`.week-switch button[data-week="${week}"]`).classList.add('active');
+            render();
+        }
+
+        // ================================================================
+        // 8. КАРТА
+        // ================================================================
+        function openMap() {
+            document.getElementById('mapOverlay').classList.add('active');
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeMap() {
+            document.getElementById('mapOverlay').classList.remove('active');
+            document.body.style.overflow = '';
+        }
+
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') {
+                closeMap();
+            }
+        });
+
+        // ================================================================
+        // 9. АВТОРАСШИРЕНИЕ ЗАМЕТОК
+        // ================================================================
+        document.addEventListener('input', function(e) {
+            if (e.target.classList.contains('note-input')) {
+                e.target.style.height = 'auto';
+                e.target.style.height = e.target.scrollHeight + 'px';
+            }
+        });
+
+        // ================================================================
+        // 10. ЗАПУСК
+        // ================================================================
+        document.addEventListener('DOMContentLoaded', function() {
+            const btn = document.querySelector(`.week-switch button[data-week="${realWeek}"]`);
+            if (btn) btn.classList.add('active');
+            
+            render();
+            updateTimer();
+            
+            setInterval(updateTimer, 1000);
+        });
+
+        console.log('✅ Страница загружена');
+        console.log(` Реальная неделя: ${realWeek}, реальный день: ${dayNames[realDayIndex]}`);
+    </script>
+
+</body>
+</html>
