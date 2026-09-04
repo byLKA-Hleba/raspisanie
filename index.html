@@ -4,8 +4,10 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Расписание</title>
+    <!-- Подключение Leaflet -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
     <style>
-        /* ===== БАЗОВЫЕ СТИЛИ ===== */
         * {
             margin: 0;
             padding: 0;
@@ -114,12 +116,12 @@
             color: #8888aa;
         }
         body.dark .action-button {
-            background: #2d2d44;
-            color: #e0e0e0;
-            border-color: #4d4d6a;
+            background: #6c5ce7;
+            color: white;
+            border-color: #6c5ce7;
         }
         body.dark .action-button:hover {
-            background: #3d3d5a;
+            background: #5a4bd1;
         }
         body.dark .modal-window {
             background: #2d2d44;
@@ -163,6 +165,12 @@
         }
         body.dark .modal-body .teacher-name {
             color: #e0e0e0;
+        }
+        body.dark .leaflet-control-attribution {
+            color: #b0b0c0 !important;
+        }
+        body.dark .leaflet-tile {
+            filter: brightness(0.7) saturate(0.8);
         }
 
         /* ===== ШАПКА ===== */
@@ -821,7 +829,7 @@
             color: #b0a0e0;
         }
 
-        /* ===== КНОПКИ ДЕЙСТВИЙ (РАВНОМЕРНО ПО ШИРИНЕ) ===== */
+        /* ===== КНОПКИ ДЕЙСТВИЙ (фиолетовые, со стикерами) ===== */
         .actions-row {
             display: flex;
             gap: 8px;
@@ -833,25 +841,26 @@
             flex: 1;
             min-width: 0;
             padding: 10px 8px;
-            background: white;
-            border: 1px solid #dfe6e9;
+            background: #6c5ce7;
+            border: 1px solid #6c5ce7;
             border-radius: 12px;
             font-weight: 600;
             font-size: 0.8rem;
-            color: #2d3436;
+            color: white;
             cursor: pointer;
             transition: 0.2s;
-            box-shadow: 0 2px 6px rgba(0,0,0,0.04);
+            box-shadow: 0 2px 8px rgba(108, 92, 231, 0.25);
             display: flex;
             align-items: center;
             justify-content: center;
-            gap: 4px;
+            gap: 6px;
             text-align: center;
             white-space: nowrap;
         }
         .action-button:hover {
-            background: #f8f9fa;
-            border-color: #6c5ce7;
+            background: #5a4bd1;
+            border-color: #5a4bd1;
+            box-shadow: 0 4px 16px rgba(108, 92, 231, 0.35);
         }
         .action-button:active {
             transform: scale(0.95);
@@ -1110,11 +1119,55 @@
             overflow-y: auto;
             max-height: 70vh;
         }
-        .map-content img {
+        #campusMap {
             width: 100%;
-            height: auto;
+            height: 400px;
             border-radius: 12px;
-            display: block;
+            z-index: 1;
+        }
+        .custom-marker {
+            background: none;
+            border: none;
+        }
+        .custom-marker div {
+            transition: transform 0.2s, box-shadow 0.2s;
+            cursor: pointer;
+        }
+        .custom-marker div:hover {
+            transform: scale(1.15);
+            box-shadow: 0 4px 16px rgba(0,0,0,0.4) !important;
+        }
+        .food-marker {
+            background: none;
+            border: none;
+            font-size: 1.4rem;
+            filter: drop-shadow(0 2px 8px rgba(0,0,0,0.3));
+            cursor: pointer;
+            transition: transform 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 32px;
+            height: 32px;
+            background: rgba(255,255,255,0.9);
+            border-radius: 50%;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.25);
+        }
+        .food-marker:hover {
+            transform: scale(1.2);
+        }
+        body.dark .food-marker {
+            background: rgba(45,45,68,0.9);
+        }
+        .user-marker-icon {
+            background: none;
+            border: none;
+        }
+        body.dark .leaflet-control-attribution {
+            color: #b0b0c0 !important;
+        }
+        body.dark .leaflet-tile {
+            filter: brightness(0.7) saturate(0.8);
         }
 
         @media (max-width: 400px) {
@@ -1132,6 +1185,7 @@
             .day-nav-arrow { padding: 6px 12px; font-size: 0.8rem; }
             .map-modal { max-width: 100%; }
             .map-content { max-height: 60vh; }
+            #campusMap { height: 300px; }
             .note-input { font-size: 0.7rem; min-height: 32px; }
             .subgroup-wrapper { flex-direction: column; gap: 8px; }
             .subgroup-col { flex: none; }
@@ -1149,7 +1203,7 @@
 
     <!-- ===== ШАПКА ===== -->
     <div class="header">
-        <span class="group"> Станки 52</span>
+        <span class="group">STANKI52</span>
         <div class="header-search">
             <input type="text" class="search-input" id="searchInput" placeholder=" Поиск..." oninput="searchSchedule(this.value)">
             <button class="search-button" onclick="searchSchedule(document.getElementById('searchInput').value)">Найти</button>
@@ -1216,6 +1270,8 @@
 
     <!-- ===== ВОДЯНОЙ ЗНАК (с пасхалкой) ===== -->
     <div class="watermark" id="watermark">
+        <span class="watermark-icon">🎬</span>
+        Directed by 
         <span class="watermark-nick">| byLKA-Xleba</span>
     </div>
 
@@ -1227,7 +1283,7 @@
                 <button class="map-close" onclick="closeMap()">✕</button>
             </div>
             <div class="map-content">
-                <img src="https://static.bntu.by/bntu/new/content/content_02d02994e681cd7b0475c5565dbda408.png%7CresizeToWidth=1200" alt="Карта корпусов" id="mapImage">
+                <div id="campusMap"></div>
             </div>
         </div>
     </div>
@@ -1236,7 +1292,7 @@
     <div class="modal-overlay" id="groupListOverlay" onclick="closeGroupList(event)">
         <div class="modal-window" onclick="event.stopPropagation()">
             <div class="modal-header">
-                <span>📋 Список группы Станки 52</span>
+                <span>📋 Список группы</span>
                 <button class="modal-close" onclick="closeGroupList()">✕</button>
             </div>
             <div class="modal-body">
@@ -1882,11 +1938,11 @@
                                         ${pair1 ? `
                                             <div class="subgroup-subject">${pair1.name}</div>
                                             <div class="subgroup-teacher">${renderTeacherNames(pair1.teacher)}</div>
-                                            <div class="subgroup-room">📍 ${pair1.room}</div>
+                                            <div class="subgroup-room">${pair1.room}</div>
                                             <div class="subgroup-note">
                                                 <textarea class="note-input" 
                                                           id="note_input_${getPairId(pair1, dayName, currentWeek)}"
-                                                          placeholder="📝 Ваша заметка..."
+                                                          placeholder="Ваша заметка..."
                                                           onchange="saveNote('${getPairId(pair1, dayName, currentWeek)}', this.value)"
                                                 >${loadNote(getPairId(pair1, dayName, currentWeek))}</textarea>
                                                 <span class="note-saved" id="note_saved_${getPairId(pair1, dayName, currentWeek)}">✅ Сохранено</span>
@@ -1902,11 +1958,11 @@
                                         ${pair2 ? `
                                             <div class="subgroup-subject">${pair2.name}</div>
                                             <div class="subgroup-teacher">${renderTeacherNames(pair2.teacher)}</div>
-                                            <div class="subgroup-room">📍 ${pair2.room}</div>
+                                            <div class="subgroup-room">${pair2.room}</div>
                                             <div class="subgroup-note">
                                                 <textarea class="note-input" 
                                                           id="note_input_${getPairId(pair2, dayName, currentWeek)}"
-                                                          placeholder="📝 Ваша заметка..."
+                                                          placeholder="Ваша заметка..."
                                                           onchange="saveNote('${getPairId(pair2, dayName, currentWeek)}', this.value)"
                                                 >${loadNote(getPairId(pair2, dayName, currentWeek))}</textarea>
                                                 <span class="note-saved" id="note_saved_${getPairId(pair2, dayName, currentWeek)}">✅ Сохранено</span>
@@ -1947,19 +2003,16 @@
         function renderTeacherNames(teacherStr) {
             if (!teacherStr || teacherStr === '?') return teacherStr || '?';
             
-            // Разбиваем по запятой
             const names = teacherStr.split(',').map(s => s.trim()).filter(s => s.length > 0);
             
             if (names.length === 0) return teacherStr;
             
-            // Если один преподаватель
             if (names.length === 1) {
                 const short = names[0];
                 const full = expandTeacherName(short);
                 return `<span class="teacher-name" data-short="${short.replace(/'/g, "\\'")}" data-full="${full.replace(/'/g, "\\'")}" onclick="toggleTeacherName(this)">${short}</span>`;
             }
             
-            // Если несколько — оборачиваем каждого
             return names.map(name => {
                 const short = name.trim();
                 const full = expandTeacherName(short);
@@ -1984,12 +2037,12 @@
                 ${pair.subgroup ? `<div class="subgroup-badge">👥 ${pair.subgroup}</div>` : ''}
                 <div class="footer-row">
                     <span class="teacher">${renderTeacherNames(pair.teacher)}</span>
-                    <span class="room">📍 ${pair.room}</span>
+                    <span class="room">${pair.room}</span>
                 </div>
                 <div class="note-area">
                     <textarea class="note-input" 
                               id="note_input_${pairId}"
-                              placeholder="📝 Ваша заметка..."
+                              placeholder="Ваша заметка..."
                               onchange="saveNote('${pairId}', this.value)"
                     >${savedNote}</textarea>
                     <span class="note-saved" id="note_saved_${pairId}">✅ Сохранено</span>
@@ -2037,8 +2090,8 @@
             if (!audio) return;
             
             audio.currentTime = 0;
-            audio.volume = 1.0; // 100% громкость
-            audio.loop = false; // не зациклен
+            audio.volume = 1.0;
+            audio.loop = false;
             audio.play().catch(e => {
                 console.log('⚠️ Звук не воспроизведён:', e);
             });
@@ -2062,11 +2115,128 @@
         }
 
         // ================================================================
-        // 16. КАРТА
+        // 16. КАРТА (fitBounds с обновлённой границей)
+        // ================================================================
+        let mapInitialized = false;
+
+        function initMap() {
+            if (mapInitialized) return;
+            
+            // Границы территории (юго-запад и северо-восток)
+            const southWest = L.latLng(53.918071, 27.588059);
+            const northEast = L.latLng(53.926573, 27.597969);
+            
+            const map = L.map('campusMap', {
+                zoomControl: true,
+                attributionControl: false
+            });
+            
+            // Подстраиваем карту под область
+            map.fitBounds([southWest, northEast], {
+                padding: [30, 30],
+                maxZoom: 18,
+                animate: true
+            });
+            map.setMaxBounds([southWest, northEast]);
+            
+            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                maxZoom: 19,
+                attribution: ''
+            }).addTo(map);
+            
+            // ===== МАРКЕРЫ КОРПУСОВ =====
+            const buildings = [
+                { name: 'АТФ (корпус 8)', lat: 53.920567, lng: 27.588658, num: 8, color: '#e17055' },
+                { name: 'ФТУГ (корпус 9)', lat: 53.921606, lng: 27.589946, num: 9, color: '#fdcb6e' },
+                { name: 'ПСФ (корпус 17)', lat: 53.923460, lng: 27.592001, num: 17, color: '#6c5ce7' },
+                { name: 'МТФ (корпус 7)', lat: 53.923968, lng: 27.592933, num: 7, color: '#00b894' },
+                { name: 'ВТФ (корпус 4)', lat: 53.919102, lng: 27.589793, num: 4, color: '#0984e3' },
+                { name: 'Главный корпус (1)', lat: 53.920914, lng: 27.592777, num: 1, color: '#e17055' },
+                { name: 'ФЭС (корпус 18)', lat: 53.921809, lng: 27.594482, num: 18, color: '#fd79a8' },
+                { name: 'ЭФ (корпус 2)', lat: 53.922392, lng: 27.591964, num: 2, color: '#00cec9' },
+                { name: 'МСФ (корпус 6)', lat: 53.923234, lng: 27.593750, num: 6, color: '#a29bfe' },
+                { name: 'Фитр (корпус 11а)', lat: 53.923542, lng: 27.594567, num: 11, color: '#e17055' },
+                { name: 'Спортивный комплекс (11б)', lat: 53.923015, lng: 27.595005, num: '11Б', color: '#e17055' },
+            ];
+            
+            buildings.forEach(b => {
+                const icon = L.divIcon({
+                    className: 'custom-marker',
+                    html: `<div style="
+                        background: ${b.color};
+                        color: white;
+                        width: 28px;
+                        height: 28px;
+                        border-radius: 50%;
+                        display: flex;
+                        align-items: center;
+                        justify-content: center;
+                        font-size: 12px;
+                        font-weight: 700;
+                        border: 2px solid white;
+                        box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+                        cursor: pointer;
+                    ">${b.num}</div>`,
+                    iconSize: [28, 28],
+                    iconAnchor: [14, 14]
+                });
+                const marker = L.marker([b.lat, b.lng], { icon }).addTo(map);
+                marker.bindPopup(`<b>${b.name}</b><br><span style="color:#636e72;">Корпус ${b.num}</span>`);
+            });
+            
+            // ===== СТОЛОВАЯ =====
+            const foodIcon = L.divIcon({
+                className: 'food-marker',
+                html: '🍴',
+                iconSize: [32, 32],
+                iconAnchor: [16, 16]
+            });
+            const foodMarker = L.marker([53.922961, 27.591338], { icon: foodIcon }).addTo(map);
+            foodMarker.bindPopup(`<b>🍴 Лучшая столовая</b><br><span style="color:#636e72;"></span>`);
+            
+            // ===== ГЕОЛОКАЦИЯ (КРАСНАЯ МЕТКА) =====
+            if (navigator.geolocation) {
+                navigator.geolocation.getCurrentPosition(
+                    function(position) {
+                        const userLat = position.coords.latitude;
+                        const userLng = position.coords.longitude;
+                        
+                        // Проверяем, в пределах ли карты пользователь
+                        if (userLat > 53.918071 && userLat < 53.926573 && 
+                            userLng > 27.588059 && userLng < 27.597969) {
+                            
+                            const userIcon = L.icon({
+                                iconUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon.png',
+                                iconSize: [25, 41],
+                                iconAnchor: [12, 41],
+                                popupAnchor: [1, -34]
+                            });
+                            
+                            L.marker([userLat, userLng], { icon: userIcon })
+                                .addTo(map)
+                                .bindPopup('📍 Вы здесь!');
+                            
+                            map.setView([userLat, userLng], 17);
+                        }
+                    },
+                    function(error) {
+                        console.log('❌ Геолокация не доступна');
+                    },
+                    { enableHighAccuracy: true }
+                );
+            }
+            
+            mapInitialized = true;
+        }
+
+        // ================================================================
+        // 17. КАРТА (открытие/закрытие)
         // ================================================================
         function openMap() {
             document.getElementById('mapOverlay').classList.add('active');
             document.body.style.overflow = 'hidden';
+            mapInitialized = false;
+            setTimeout(initMap, 300);
         }
 
         function closeMap() {
@@ -2075,7 +2245,7 @@
         }
 
         // ================================================================
-        // 17. СПИСОК ГРУППЫ
+        // 18. СПИСОК ГРУППЫ
         // ================================================================
         function openGroupList() {
             const tbody = document.getElementById('groupListBody');
@@ -2101,7 +2271,7 @@
         }
 
         // ================================================================
-        // 18. ЭКЗАМЕНЫ
+        // 19. ЭКЗАМЕНЫ
         // ================================================================
         function openExams() {
             const tbody = document.getElementById('examsBody');
@@ -2130,7 +2300,7 @@
         }
 
         // ================================================================
-        // 19. ЗАКРЫТИЕ МОДАЛОК ПО ESC
+        // 20. ЗАКРЫТИЕ МОДАЛОК ПО ESC
         // ================================================================
         document.addEventListener('keydown', function(e) {
             if (e.key === 'Escape') {
@@ -2141,7 +2311,7 @@
         });
 
         // ================================================================
-        // 20. АВТОРАСШИРЕНИЕ ЗАМЕТОК
+        // 21. АВТОРАСШИРЕНИЕ ЗАМЕТОК
         // ================================================================
         document.addEventListener('input', function(e) {
             if (e.target.classList.contains('note-input')) {
@@ -2151,7 +2321,7 @@
         });
 
         // ================================================================
-        // 21. ЗАПУСК
+        // 22. ЗАПУСК
         // ================================================================
         document.addEventListener('DOMContentLoaded', function() {
             const btn = document.querySelector(`.week-switch button[data-week="${realWeek}"]`);
