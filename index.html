@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Расписание</title>
     <style>
+        /* ===== БАЗОВЫЕ СТИЛИ ===== */
         * {
             margin: 0;
             padding: 0;
@@ -15,9 +16,12 @@
         body {
             background: #f0f2f5;
             padding: 16px;
-            max-width: 500px;
+            max-width: 540px;
             margin: 0 auto;
             transition: background 0.3s, color 0.3s;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
         }
         body.dark {
             background: #1a1a2e;
@@ -66,6 +70,15 @@
             background: #00b894 !important;
             color: white !important;
         }
+        body.dark .week-switch button.selected-week {
+            border-color: #6c5ce7 !important;
+            color: #b0a0e0 !important;
+        }
+        body.dark .week-switch button.selected-week.active {
+            border-color: #6c5ce7 !important;
+            background: #6c5ce7 !important;
+            color: white !important;
+        }
         body.dark .header .group {
             color: #ffffff;
         }
@@ -100,21 +113,56 @@
         body.dark .note-input::placeholder {
             color: #8888aa;
         }
-        body.dark .map-button {
-            background: #6c5ce7;
-        }
-        body.dark .map-modal {
+        body.dark .action-button {
             background: #2d2d44;
+            color: #e0e0e0;
+            border-color: #4d4d6a;
         }
-        body.dark .map-header {
+        body.dark .action-button:hover {
+            background: #3d3d5a;
+        }
+        body.dark .modal-window {
+            background: #2d2d44;
+            color: #e0e0e0;
+        }
+        body.dark .modal-body table th {
+            background: #3d3d5a;
+            color: #e0e0e0;
+        }
+        body.dark .modal-body table td {
             border-bottom-color: #3d3d5a;
             color: #e0e0e0;
         }
-        body.dark .map-close {
+        body.dark .modal-close {
             color: #b0b0c0;
         }
-        body.dark .map-close:hover {
+        body.dark .modal-close:hover {
             background: rgba(255,255,255,0.05);
+        }
+        body.dark .subgroup-tag {
+            background: #3d3a5a;
+            color: #b0a0e0;
+        }
+        body.dark .exam-status {
+            background: #3d3d5a;
+            color: #b0b0c0;
+        }
+        body.dark .exam-status.pass {
+            background: #1a3d3a;
+            color: #6cce7a;
+        }
+        body.dark .exam-status.fail {
+            background: #3d2a2a;
+            color: #e17055;
+        }
+        body.dark .watermark {
+            color: rgba(255, 255, 255, 0.15);
+        }
+        body.dark .watermark .watermark-nick {
+            color: rgba(255, 255, 255, 0.25);
+        }
+        body.dark .modal-body .teacher-name {
+            color: #e0e0e0;
         }
 
         /* ===== ШАПКА ===== */
@@ -122,8 +170,10 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 12px;
+            margin-bottom: 8px;
             padding: 0 4px;
+            flex-wrap: wrap;
+            gap: 8px;
         }
         .header .group {
             font-weight: 700;
@@ -135,6 +185,60 @@
             gap: 8px;
             align-items: center;
         }
+        .header-search {
+            display: flex;
+            gap: 6px;
+            align-items: center;
+            flex: 1;
+            max-width: 280px;
+            min-width: 120px;
+        }
+        .search-input {
+            flex: 1;
+            padding: 6px 12px;
+            border: 1px solid #dfe6e9;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            outline: none;
+            background: white;
+            transition: 0.2s;
+            min-width: 60px;
+        }
+        .search-input:focus {
+            border-color: #6c5ce7;
+            box-shadow: 0 0 0 2px rgba(108, 92, 231, 0.1);
+        }
+        .search-button {
+            padding: 6px 14px;
+            background: #6c5ce7;
+            color: white;
+            border: none;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: 0.2s;
+            white-space: nowrap;
+        }
+        .search-button:hover {
+            background: #5a4bd1;
+        }
+        .search-button:active {
+            transform: scale(0.95);
+        }
+        .search-clear {
+            background: none;
+            border: none;
+            color: #b2bec3;
+            cursor: pointer;
+            font-size: 1rem;
+            padding: 0 4px;
+            display: none;
+        }
+        .search-clear.show {
+            display: inline;
+        }
+
         .theme-toggle {
             background: none;
             border: none;
@@ -156,42 +260,79 @@
             padding: 14px 18px;
             margin: 12px 0 16px;
             color: #2d3436;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            flex-wrap: wrap;
-            gap: 8px;
             transition: background 0.3s, color 0.3s;
+            min-height: 80px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
         }
         body.dark .timer-container {
             background: #2d2d44;
             color: #e0e0e0;
         }
+        .timer-main {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
         .timer-container .timer-label {
-            font-size: 0.8rem;
-            opacity: 0.8;
+            font-size: 1rem;
+            font-weight: 600;
+            opacity: 0.9;
+            flex: 1;
         }
         .timer-container .timer-display {
             font-size: 1.8rem;
             font-weight: 700;
             font-variant-numeric: tabular-nums;
-            min-width: 140px;
+            min-width: 120px;
             text-align: right;
             letter-spacing: 2px;
         }
         .timer-container .timer-display.ongoing {
-            color: #e17055;
+            color: #00b894;
         }
         .timer-container .timer-display.waiting {
             color: #fdcb6e;
         }
         .timer-container .timer-display.done {
+            color: #b2bec3;
+        }
+        .timer-container .timer-display.weekend {
+            color: #6c5ce7;
+        }
+        .timer-sub-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 8px;
+            padding-top: 8px;
+            border-top: 1px dashed #e9ecef;
+            font-size: 0.9rem;
+        }
+        body.dark .timer-sub-row {
+            border-top-color: #3d3d5a;
+        }
+        .timer-sub-row .timer-sub-label {
+            font-weight: 500;
+            opacity: 0.9;
+        }
+        .timer-sub-row .timer-sub-display {
+            font-weight: 600;
+            font-variant-numeric: tabular-nums;
+            letter-spacing: 1px;
+            font-size: 1.2rem;
+        }
+        .timer-sub-row .timer-sub-display.ongoing {
             color: #00b894;
         }
-        .timer-container .timer-pair-name {
-            font-size: 0.75rem;
-            opacity: 0.7;
-            width: 100%;
+        .timer-sub-row .timer-sub-display.waiting {
+            color: #fdcb6e;
+        }
+        .timer-sub-row .timer-sub-display.done {
+            color: #b2bec3;
         }
 
         /* ===== ПЕРЕКЛЮЧЕНИЕ НЕДЕЛЬ ===== */
@@ -225,6 +366,24 @@
         .week-switch button.real-week.active {
             border-color: #00b894 !important;
             background: #00b894 !important;
+            color: white !important;
+        }
+        .week-switch button.selected-week {
+            border-color: #6c5ce7 !important;
+            color: #6c5ce7 !important;
+        }
+        body.dark .week-switch button.selected-week {
+            border-color: #6c5ce7 !important;
+            color: #b0a0e0 !important;
+        }
+        .week-switch button.selected-week.active {
+            border-color: #6c5ce7 !important;
+            background: #6c5ce7 !important;
+            color: white !important;
+        }
+        body.dark .week-switch button.selected-week.active {
+            border-color: #6c5ce7 !important;
+            background: #6c5ce7 !important;
             color: white !important;
         }
         .week-switch button:active { transform: scale(0.97); }
@@ -357,6 +516,9 @@
             border-left-color: #fdcb6e !important;
             background: #fffdf0;
         }
+        .pair-card.hidden {
+            display: none;
+        }
         .pair-card .time-row {
             display: flex;
             justify-content: space-between;
@@ -395,6 +557,21 @@
             margin-bottom: 4px;
         }
         
+        /* ===== ПРЕПОДАВАТЕЛЬ (кликабельный) ===== */
+        .teacher-name {
+            cursor: pointer;
+            transition: 0.2s;
+            border-bottom: 1px dashed transparent;
+        }
+        .teacher-name:hover {
+            border-bottom-color: #6c5ce7;
+            color: #6c5ce7;
+        }
+        body.dark .teacher-name:hover {
+            border-bottom-color: #b0a0e0;
+            color: #b0a0e0;
+        }
+
         /* ===== ПОДГРУППА ===== */
         .subgroup-badge {
             font-size: 0.7rem;
@@ -433,10 +610,143 @@
             gap: 4px;
         }
 
-        /* ===== ЗАМЕТКИ (МНОГОСТРОЧНЫЕ) ===== */
+        /* ===== РАЗДЕЛЕНИЕ НА ПОДГРУППЫ ===== */
+        .subgroup-wrapper {
+            display: flex;
+            gap: 12px;
+            margin-top: 6px;
+            padding-top: 6px;
+            border-top: 1px dashed #e9ecef;
+            align-items: stretch;
+        }
+        body.dark .subgroup-wrapper {
+            border-top-color: #3d3d5a;
+        }
+        .subgroup-col {
+            flex: 1;
+            min-width: 0;
+            display: flex;
+        }
+        .subgroup-col-inner {
+            flex: 1;
+            background: #f8f9fa;
+            border-radius: 12px;
+            padding: 10px 12px;
+            display: flex;
+            flex-direction: column;
+            border: 1px solid #e9ecef;
+            min-height: 80px;
+        }
+        body.dark .subgroup-col-inner {
+            background: #2d2d44;
+            border-color: #3d3d5a;
+        }
+        .subgroup-col-inner .subgroup-label {
+            font-size: 0.6rem;
+            font-weight: 700;
+            color: #6c5ce7;
+            background: #f0edff;
+            padding: 1px 10px;
+            border-radius: 30px;
+            display: inline-block;
+            margin-bottom: 6px;
+            align-self: flex-start;
+        }
+        body.dark .subgroup-col-inner .subgroup-label {
+            background: #3d3a5a;
+            color: #b0a0e0;
+        }
+        .subgroup-col-inner .subgroup-empty {
+            font-size: 0.7rem;
+            color: #b2bec3;
+            font-style: italic;
+            padding: 4px 0;
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .subgroup-col-inner .subgroup-subject {
+            font-weight: 600;
+            font-size: 0.95rem;
+            color: #1a1a2e;
+            margin-bottom: 2px;
+        }
+        body.dark .subgroup-col-inner .subgroup-subject {
+            color: #e0e0e0;
+        }
+        .subgroup-col-inner .subgroup-teacher {
+            font-size: 0.75rem;
+            color: #636e72;
+            margin-bottom: 2px;
+        }
+        body.dark .subgroup-col-inner .subgroup-teacher {
+            color: #b0b0c0;
+        }
+        .subgroup-col-inner .subgroup-room {
+            font-size: 0.75rem;
+            color: #00b894;
+            font-weight: 600;
+            background: #e8f8f5;
+            padding: 1px 10px;
+            border-radius: 30px;
+            display: inline-block;
+            align-self: flex-start;
+            margin-bottom: 6px;
+        }
+        body.dark .subgroup-col-inner .subgroup-room {
+            background: #1a3d3a;
+            color: #6cce7a;
+        }
+        .subgroup-col-inner .subgroup-note {
+            margin-top: auto;
+            padding-top: 6px;
+        }
+        .subgroup-col-inner .subgroup-note textarea {
+            width: 100%;
+            padding: 4px 8px;
+            border: 1px solid #dfe6e9;
+            border-radius: 6px;
+            font-size: 0.7rem;
+            line-height: 1.4;
+            color: #2d3436;
+            background: white;
+            outline: none;
+            resize: vertical;
+            min-height: 32px;
+            max-height: 100px;
+            font-family: inherit;
+            transition: 0.2s;
+        }
+        body.dark .subgroup-col-inner .subgroup-note textarea {
+            background: #3d3d5a;
+            color: #e0e0e0;
+            border-color: #4d4d6a;
+        }
+        .subgroup-col-inner .subgroup-note textarea:focus {
+            border-color: #6c5ce7;
+            box-shadow: 0 0 0 2px rgba(108, 92, 231, 0.1);
+        }
+        .subgroup-col-inner .subgroup-note textarea::placeholder {
+            color: #b2bec3;
+            font-style: italic;
+        }
+        .subgroup-col-inner .note-saved {
+            font-size: 0.6rem;
+            color: #00b894;
+            margin-top: 2px;
+            opacity: 0;
+            transition: opacity 0.3s;
+            text-align: right;
+        }
+        .subgroup-col-inner .note-saved.show {
+            opacity: 1;
+        }
+
+        /* ===== ЗАМЕТКИ (для обычных пар) ===== */
         .note-area {
-            margin-top: 10px;
-            padding-top: 10px;
+            margin-top: 8px;
+            padding-top: 8px;
             border-top: 1px dashed #e9ecef;
         }
         body.dark .note-area {
@@ -444,19 +754,18 @@
         }
         .note-input {
             width: 100%;
-            padding: 8px 10px;
+            padding: 6px 10px;
             border: 1px solid #dfe6e9;
             border-radius: 8px;
-            font-size: 0.8rem;
+            font-size: 0.75rem;
             line-height: 1.5;
             color: #2d3436;
             background: #f8f9fa;
             transition: 0.2s;
             outline: none;
             resize: vertical;
-            min-height: 56px;
-            max-height: 200px;
-            overflow-y: auto;
+            min-height: 40px;
+            max-height: 120px;
             font-family: inherit;
         }
         .note-input:focus {
@@ -469,9 +778,9 @@
         }
         .note-saved {
             display: block;
-            font-size: 0.65rem;
+            font-size: 0.6rem;
             color: #00b894;
-            margin-top: 4px;
+            margin-top: 2px;
             opacity: 0;
             transition: opacity 0.3s;
             text-align: right;
@@ -491,28 +800,253 @@
             display: block;
             margin-bottom: 12px;
         }
-
-        /* ===== КНОПКА КАРТЫ ===== */
-        .map-button {
-            display: block;
-            width: 100%;
-            padding: 14px;
-            background: #6c5ce7;
-            color: white;
-            border: none;
+        .empty-day.weekend {
+            background: rgba(108, 92, 231, 0.05);
             border-radius: 16px;
-            font-size: 1rem;
-            font-weight: 700;
-            cursor: pointer;
-            transition: 0.3s;
-            margin: 16px 0 4px;
-            box-shadow: 0 4px 12px rgba(108, 92, 231, 0.3);
+            padding: 60px 20px;
         }
-        .map-button:active {
-            transform: scale(0.97);
+        .empty-day.weekend .big-emoji {
+            font-size: 4rem;
+        }
+        .empty-day.weekend .weekend-title {
+            font-size: 1.4rem;
+            font-weight: 700;
+            color: #6c5ce7;
+            margin-bottom: 8px;
+        }
+        body.dark .empty-day.weekend {
+            background: rgba(108, 92, 231, 0.1);
+        }
+        body.dark .empty-day.weekend .weekend-title {
+            color: #b0a0e0;
         }
 
-        /* ===== МОДАЛЬНОЕ ОКНО С КАРТОЙ ===== */
+        /* ===== КНОПКИ ДЕЙСТВИЙ (РАВНОМЕРНО ПО ШИРИНЕ) ===== */
+        .actions-row {
+            display: flex;
+            gap: 8px;
+            margin: 16px 0 8px;
+            flex-wrap: wrap;
+            justify-content: flex-start;
+        }
+        .action-button {
+            flex: 1;
+            min-width: 0;
+            padding: 10px 8px;
+            background: white;
+            border: 1px solid #dfe6e9;
+            border-radius: 12px;
+            font-weight: 600;
+            font-size: 0.8rem;
+            color: #2d3436;
+            cursor: pointer;
+            transition: 0.2s;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.04);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 4px;
+            text-align: center;
+            white-space: nowrap;
+        }
+        .action-button:hover {
+            background: #f8f9fa;
+            border-color: #6c5ce7;
+        }
+        .action-button:active {
+            transform: scale(0.95);
+        }
+        .action-button .icon {
+            font-size: 1rem;
+        }
+        @media (max-width: 400px) {
+            .action-button {
+                font-size: 0.7rem;
+                padding: 8px 4px;
+                white-space: normal;
+                word-break: break-word;
+            }
+        }
+
+        /* ===== МОДАЛЬНЫЕ ОКНА ===== */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.6);
+            backdrop-filter: blur(4px);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 2000;
+            padding: 20px;
+        }
+        .modal-overlay.active {
+            display: flex;
+        }
+        .modal-window {
+            background: white;
+            border-radius: 24px;
+            max-width: 500px;
+            width: 100%;
+            max-height: 85vh;
+            overflow: hidden;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            animation: modalFadeIn 0.3s ease;
+            color: #2d3436;
+        }
+        @keyframes modalFadeIn {
+            from { opacity: 0; transform: scale(0.95) translateY(20px); }
+            to { opacity: 1; transform: scale(1) translateY(0); }
+        }
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 16px 20px;
+            border-bottom: 1px solid #e9ecef;
+            font-weight: 700;
+            font-size: 1.1rem;
+            color: #2d3436;
+        }
+        body.dark .modal-header {
+            border-bottom-color: #3d3d5a;
+            color: #e0e0e0;
+        }
+        .modal-close {
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: #636e72;
+            padding: 4px 8px;
+            border-radius: 8px;
+            transition: 0.2s;
+        }
+        .modal-close:hover {
+            background: rgba(0,0,0,0.05);
+        }
+        .modal-body {
+            padding: 16px 20px 20px;
+            overflow-y: auto;
+            max-height: 70vh;
+            color: #2d3436;
+        }
+        body.dark .modal-body {
+            color: #e0e0e0;
+        }
+        .modal-body table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.8rem;
+            color: #2d3436;
+        }
+        body.dark .modal-body table {
+            color: #e0e0e0;
+        }
+        .modal-body table th {
+            text-align: left;
+            padding: 8px 6px;
+            background: #f8f9fa;
+            font-weight: 600;
+            color: #2d3436;
+            border-bottom: 2px solid #e9ecef;
+        }
+        body.dark .modal-body table th {
+            background: #3d3d5a;
+            color: #e0e0e0;
+            border-bottom-color: #4d4d6a;
+        }
+        .modal-body table td {
+            padding: 8px 6px;
+            border-bottom: 1px solid #e9ecef;
+            vertical-align: middle;
+            color: #2d3436;
+        }
+        body.dark .modal-body table td {
+            border-bottom-color: #3d3d5a;
+            color: #e0e0e0;
+        }
+        .subgroup-tag {
+            display: inline-block;
+            padding: 2px 10px;
+            border-radius: 30px;
+            font-size: 0.65rem;
+            font-weight: 600;
+            background: #f0edff;
+            color: #6c5ce7;
+        }
+        body.dark .subgroup-tag {
+            background: #3d3a5a;
+            color: #b0a0e0;
+        }
+        .exam-status {
+            display: inline-block;
+            padding: 2px 10px;
+            border-radius: 30px;
+            font-size: 0.65rem;
+            font-weight: 600;
+            background: #f8f9fa;
+            color: #2d3436;
+        }
+        body.dark .exam-status {
+            background: #3d3d5a;
+            color: #b0b0c0;
+        }
+        .exam-status.pass {
+            background: #e8f8f5;
+            color: #00b894;
+        }
+        body.dark .exam-status.pass {
+            background: #1a3d3a;
+            color: #6cce7a;
+        }
+        .exam-status.fail {
+            background: #fff5f3;
+            color: #e17055;
+        }
+        body.dark .exam-status.fail {
+            background: #3d2a2a;
+            color: #e17055;
+        }
+        .exam-status.scheduled {
+            background: #fffdf0;
+            color: #fdcb6e;
+        }
+        body.dark .exam-status.scheduled {
+            background: #3d3a1a;
+            color: #fdcb6e;
+        }
+
+        /* ===== ВОДЯНОЙ ЗНАК (с пасхалкой) ===== */
+        .watermark {
+            margin-top: 40px;
+            padding: 20px 0 10px;
+            text-align: center;
+            font-size: 0.8rem;
+            color: rgba(0, 0, 0, 0.12);
+            letter-spacing: 1px;
+            border-top: 1px solid rgba(0, 0, 0, 0.05);
+            user-select: none;
+            flex-shrink: 0;
+            cursor: default;
+            transition: 0.2s;
+        }
+        .watermark .watermark-nick {
+            font-weight: 700;
+            color: rgba(108, 92, 231, 0.2);
+            letter-spacing: 2px;
+        }
+        .watermark:hover {
+            color: rgba(0, 0, 0, 0.2);
+        }
+        body.dark .watermark:hover {
+            color: rgba(255, 255, 255, 0.25);
+        }
+
+        /* ===== КАРТА ===== */
         .map-overlay {
             position: fixed;
             top: 0;
@@ -537,18 +1071,12 @@
             width: 100%;
             max-height: 90vh;
             overflow: hidden;
-            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
             animation: mapFadeIn 0.3s ease;
         }
         @keyframes mapFadeIn {
-            from {
-                opacity: 0;
-                transform: scale(0.9);
-            }
-            to {
-                opacity: 1;
-                transform: scale(1);
-            }
+            from { opacity: 0; transform: scale(0.9); }
+            to { opacity: 1; transform: scale(1); }
         }
         .map-header {
             display: flex;
@@ -559,6 +1087,10 @@
             font-weight: 700;
             font-size: 1.1rem;
             color: #2d3436;
+        }
+        body.dark .map-header {
+            border-bottom-color: #3d3d5a;
+            color: #e0e0e0;
         }
         .map-close {
             background: none;
@@ -586,22 +1118,43 @@
         }
 
         @media (max-width: 400px) {
+            .header-search {
+                max-width: 100%;
+                min-width: 80px;
+            }
+            .search-input { font-size: 0.7rem; padding: 4px 10px; }
+            .search-button { font-size: 0.65rem; padding: 4px 10px; }
             .day-nav button { font-size: 0.65rem; min-width: 36px; padding: 6px 0; }
             .pair-card { padding: 12px; }
             .pair-card .subject { font-size: 0.95rem; }
-            .timer-container .timer-display { font-size: 1.3rem; min-width: 100px; }
+            .timer-container .timer-display { font-size: 1.3rem; min-width: 80px; }
+            .timer-sub-row .timer-sub-display { font-size: 1rem; }
             .day-nav-arrow { padding: 6px 12px; font-size: 0.8rem; }
             .map-modal { max-width: 100%; }
             .map-content { max-height: 60vh; }
-            .note-input { font-size: 0.7rem; min-height: 48px; }
+            .note-input { font-size: 0.7rem; min-height: 32px; }
+            .subgroup-wrapper { flex-direction: column; gap: 8px; }
+            .subgroup-col { flex: none; }
+            .timer-sub-row { flex-direction: column; align-items: flex-start; gap: 4px; }
+            .action-button { font-size: 0.7rem; padding: 8px 4px; white-space: normal; word-break: break-word; }
+            .modal-window { max-width: 100%; }
+            .modal-body table { font-size: 0.7rem; }
+            .modal-body table th, .modal-body table td { padding: 4px 4px; }
         }
     </style>
 </head>
 <body>
+    <!-- ===== СКРЫТЫЙ АУДИО ДЛЯ ПАСХАЛКИ ===== -->
+    <audio id="easterEggSound" src="easteregg.mp3" preload="auto"></audio>
 
     <!-- ===== ШАПКА ===== -->
     <div class="header">
         <span class="group"> Станки 52</span>
+        <div class="header-search">
+            <input type="text" class="search-input" id="searchInput" placeholder=" Поиск..." oninput="searchSchedule(this.value)">
+            <button class="search-button" onclick="searchSchedule(document.getElementById('searchInput').value)">Найти</button>
+            <button class="search-clear" id="searchClear" onclick="clearSearch()">✕</button>
+        </div>
         <div class="header-controls">
             <button class="theme-toggle" onclick="toggleTheme()" title="Тёмная тема">🌙</button>
         </div>
@@ -615,11 +1168,14 @@
 
     <!-- ===== ТАЙМЕР ===== -->
     <div class="timer-container" id="timerContainer">
-        <div>
-            <div class="timer-label" id="timerLabel">До начала пары</div>
-            <div class="timer-pair-name" id="timerPairName">Следующая: —</div>
+        <div class="timer-main">
+            <div class="timer-label" id="timerLabel">⏳ Загрузка...</div>
+            <div class="timer-display" id="timerDisplay">--:--:--</div>
         </div>
-        <div class="timer-display" id="timerDisplay">--:--:--</div>
+        <div class="timer-sub-row" id="timerSubRow" style="display:none;">
+            <span class="timer-sub-label" id="timerSubLabel">До начала следующей пары:</span>
+            <span class="timer-sub-display" id="timerSubDisplay">--:--:--</span>
+        </div>
     </div>
 
     <!-- ===== НАВИГАЦИЯ ПО ДНЯМ ===== -->
@@ -645,20 +1201,83 @@
     <!-- ===== КОНТЕЙНЕР ПАР ===== -->
     <div id="pairsContainer"></div>
 
-    <!-- ===== КНОПКА КАРТЫ ===== -->
-    <button class="map-button" onclick="openMap()">
-         Карта корпусов
-    </button>
+    <!-- ===== КНОПКИ ДЕЙСТВИЙ ===== -->
+    <div class="actions-row">
+        <button class="action-button" onclick="openMap()">
+            <span class="icon">🗺️</span> Карта
+        </button>
+        <button class="action-button" onclick="openGroupList()">
+            <span class="icon">📋</span> Список
+        </button>
+        <button class="action-button" onclick="openExams()">
+            <span class="icon">📝</span> Экзамены
+        </button>
+    </div>
+
+    <!-- ===== ВОДЯНОЙ ЗНАК (с пасхалкой) ===== -->
+    <div class="watermark" id="watermark">
+        <span class="watermark-nick">| byLKA-Xleba</span>
+    </div>
 
     <!-- ===== МОДАЛЬНОЕ ОКНО С КАРТОЙ ===== -->
     <div class="map-overlay" id="mapOverlay" onclick="closeMap()">
         <div class="map-modal" onclick="event.stopPropagation()">
             <div class="map-header">
-                <span> Карта корпусов</span>
+                <span>🗺️ Карта корпусов</span>
                 <button class="map-close" onclick="closeMap()">✕</button>
             </div>
             <div class="map-content">
                 <img src="https://static.bntu.by/bntu/new/content/content_02d02994e681cd7b0475c5565dbda408.png%7CresizeToWidth=1200" alt="Карта корпусов" id="mapImage">
+            </div>
+        </div>
+    </div>
+
+    <!-- ===== МОДАЛЬНОЕ ОКНО: СПИСОК ГРУППЫ ===== -->
+    <div class="modal-overlay" id="groupListOverlay" onclick="closeGroupList(event)">
+        <div class="modal-window" onclick="event.stopPropagation()">
+            <div class="modal-header">
+                <span>📋 Список группы Станки 52</span>
+                <button class="modal-close" onclick="closeGroupList()">✕</button>
+            </div>
+            <div class="modal-body">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>№</th>
+                            <th>ФИО</th>
+                            <th>Подгруппа</th>
+                            <th>Примечание</th>
+                        </tr>
+                    </thead>
+                    <tbody id="groupListBody">
+                        <!-- Заполняется JS -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- ===== МОДАЛЬНОЕ ОКНО: ЭКЗАМЕНЫ ===== -->
+    <div class="modal-overlay" id="examsOverlay" onclick="closeExams(event)">
+        <div class="modal-window" onclick="event.stopPropagation()">
+            <div class="modal-header">
+                <span>📝 Экзамены и зачёты</span>
+                <button class="modal-close" onclick="closeExams()">✕</button>
+            </div>
+            <div class="modal-body">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Предмет</th>
+                            <th>Статус</th>
+                            <th>Дата</th>
+                            <th>Примечание</th>
+                        </tr>
+                    </thead>
+                    <tbody id="examsBody">
+                        <!-- Заполняется JS -->
+                    </tbody>
+                </table>
             </div>
         </div>
     </div>
@@ -671,81 +1290,81 @@
         const schedule = {
             1: {
                 'Понедельник': [
-                    { time: '13:55 – 15:30', name: 'Информатика', type: 'Лабораторная', teacher: 'ст.пр. Кавальчук О.Н.', room: 'а.406 к.6', subgroup: '1-я подгруппа' },
-                    { time: '15:40 – 17:15', name: 'Физкультура', type: ' ', teacher: 'ст.пр. Кришталь С.А., ст.пр. Панова Е.В.', room: 'к.11Б' },
-                    { time: '17:45 – 19:20', name: 'Инженерная графика', type: 'Лекция', teacher: 'ст.пр. Джежора С.В.', room: 'а.4п к.8' },
-                    { time: '19:30 – 21:05', name: 'Технология конструкционных материалов', type: 'Лабораторная', teacher: 'ст.пр. Чигринов В.Е., преп. Пузынин Я.С.', room: 'лаб.12 к.7', subgroup: '2-я подгруппа' },
+                    { time: '13:55 – 15:30', name: 'Информатика', type: 'Лабораторная', teacher: 'Кавальчук О.Н.', room: 'а.406 к.6', subgroup: '1-я подгруппа' },
+                    { time: '15:40 – 17:15', name: 'Физкультура', type: ' ', teacher: 'Кришталь С.А., Панова Е.В.', room: 'к.11Б' },
+                    { time: '17:45 – 19:20', name: 'Инженерная графика', type: 'Лекция', teacher: 'Джежора С.В.', room: 'а.4п к.8' },
+                    { time: '19:30 – 21:05', name: 'Технология конструкционных материалов', type: 'Лабораторная', teacher: 'Чигринов В.Е., Пузынин Я.С.', room: 'лаб.12 к.7', subgroup: '2-я подгруппа' },
                 ],
                 'Вторник': [
-                    { time: '12:00 – 13:35', name: 'ОИЗ. Инженерная графика', type: 'Практика', teacher: 'ст.пр. Джежора С. В.', room: 'а.510 к.8' },
-                    { time: '13:55 – 15:30', name: 'Английский язык', type: 'Практика', teacher: 'ст.пр. Лапко О.А.', room: 'а.430 к.18' },
-                    { time: '15:40 – 17:15', name: 'Математика', type: 'Лекция', teacher: 'доц. Крушевский Е.А.', room: 'а.308 к.6' },
-                    { time: '17:45 – 19:20', name: 'Физика', type: 'Лекция', teacher: 'доц. Бобученко Д.С.', room: 'а.2п к.17' },
-                    { time: '19:30 – 21:05', name: 'ОИЗ. Инженерная графика', type: 'Лекция', teacher: 'ст.пр. Джежора С.В.', room: 'а.4п к.8' },
+                    { time: '12:00 – 13:35', name: 'ОИЗ. Инженерная графика', type: 'Практика', teacher: 'Джежора С.В.', room: 'а.510 к.8' },
+                    { time: '13:55 – 15:30', name: 'Английский язык', type: 'Практика', teacher: 'Лапко О.А.', room: 'а.430 к.18' },
+                    { time: '15:40 – 17:15', name: 'Математика', type: 'Лекция', teacher: 'Крушевский Е.А.', room: 'а.308 к.6' },
+                    { time: '17:45 – 19:20', name: 'Физика', type: 'Лекция', teacher: 'Бобученко Д.С.', room: 'а.2п к.17' },
+                    { time: '19:30 – 21:05', name: 'ОИЗ. Инженерная графика', type: 'Лекция', teacher: 'Джежора С.В.', room: 'а.4п к.8' },
                 ],
                 'Среда': [
-                    { time: '12:00 – 13:35', name: 'Химия', type: 'Практика', teacher: 'доц. Стрелкова Е.В.', room: 'а.508а к.11' },
-                    { time: '15:40 – 17:15', name: 'Химия', type: 'Лекция', teacher: 'доц. Стрелкова Е.В.', room: 'а.2п к.17' },
-                    { time: '17:45 – 19:20', name: 'Информатика', type: 'Лекция', teacher: 'ст.пр. Кавальчук О.Н.', room: 'а.2п к.17' },
-                    { time: '19:30 – 21:05', name: 'ОИЗ.Физика', type: 'Лекция', teacher: 'доц. Бобученко Д.С.', room: 'а.2п к.17' },
+                    { time: '12:00 – 13:35', name: 'Химия', type: 'Практика', teacher: 'Стрелкова Е.В.', room: 'а.508а к.11' },
+                    { time: '15:40 – 17:15', name: 'Химия', type: 'Лекция', teacher: 'Стрелкова Е.В.', room: 'а.2п к.17' },
+                    { time: '17:45 – 19:20', name: 'Информатика', type: 'Лекция', teacher: 'Кавальчук О.Н.', room: 'а.2п к.17' },
+                    { time: '19:30 – 21:05', name: 'ОИЗ.Физика', type: 'Лекция', teacher: 'Бобученко Д.С.', room: 'а.2п к.17' },
                 ],
                 'Четверг': [
                     { time: '12:00 – 13:35', name: 'Профессиональное обучение по профессиям рабочих', type: 'Лабораторная', teacher: '?', room: 'Мастерская к.7' },
                     { time: '13:55 – 15:30', name: 'Профессиональное обучение по профессиям рабочих', type: 'Лабораторная', teacher: '?', room: 'Мастерская к.7' },
-                    { time: '15:40 – 17:15', name: 'Физкультура', type: ' ', teacher: 'ст.пр. Кришталь С.А., ст.пр. Панова Е.В.', room: 'к.11Б' },
-                    { time: '17:45 – 19:20', name: 'Инженерная графика', type: 'Практика', teacher: 'ст.пр. Джежора С.В.', room: 'а.510 к.8' },
-                    { time: '19:30 – 21:05', name: 'ОИЗ.Физика', type: 'Практика', teacher: 'доц. Бобученко Д.С.', room: 'а.203 к.17' },
+                    { time: '15:40 – 17:15', name: 'Физкультура', type: ' ', teacher: 'Кришталь С.А., Панова Е.В.', room: 'к.11Б' },
+                    { time: '17:45 – 19:20', name: 'Инженерная графика', type: 'Практика', teacher: 'Джежора С.В.', room: 'а.510 к.8' },
+                    { time: '19:30 – 21:05', name: 'ОИЗ.Физика', type: 'Практика', teacher: 'Бобученко Д.С.', room: 'а.203 к.17' },
                 ],
                 'Пятница': [
-                    { time: '13:55 – 15:30', name: 'Физика', type: 'Практика', teacher: 'доц. Бобученко Д.С.', room: 'а.201 к.17' },
-                    { time: '15:40 – 17:15', name: 'Математика', type: 'Практика', teacher: 'ст.пр. Доронина А.В.', room: 'а.221 к.6' },
-                    { time: '17:45 – 19:20', name: 'Информатика', type: 'Лабораторная', teacher: 'ст.пр. Кавальчук О.Н.', room: 'а.406 к.6', subgroup: '1-я подгруппа'  },
-                    { time: '17:45 – 19:20', name: 'Технология конструкционных материалов', type: 'Лабораторная', teacher: 'ст.пр. Чигринов В.Е., преп. Пузынин Я.С.', room: 'лаб.12 к.7', subgroup: '2-я подгруппа' },
-                    { time: '19:30 – 21:05', name: 'Химия', type: 'Лабораторная', teacher: 'доц. Стрелкова Е.В.', room: 'лаб.512 к.11', subgroup: '1-я подгруппа' },
-                    { time: '19:30 – 21:05', name: 'Информатика', type: 'Лабораторная', teacher: 'ст.пр. Кавальчук О.Н.', room: 'а.406 к.6', subgroup: '2-я подгруппа' },
+                    { time: '13:55 – 15:30', name: 'Физика', type: 'Практика', teacher: 'Бобученко Д.С.', room: 'а.201 к.17' },
+                    { time: '15:40 – 17:15', name: 'Математика', type: 'Практика', teacher: 'Доронина А.В.', room: 'а.221 к.6' },
+                    { time: '17:45 – 19:20', name: 'Информатика', type: 'Лабораторная', teacher: 'Кавальчук О.Н.', room: 'а.406 к.6', subgroup: '1-я подгруппа'  },
+                    { time: '17:45 – 19:20', name: 'Технология конструкционных материалов', type: 'Лабораторная', teacher: 'Чигринов В.Е., Пузынин Я.С.', room: 'лаб.12 к.7', subgroup: '2-я подгруппа' },
+                    { time: '19:30 – 21:05', name: 'Химия', type: 'Лабораторная', teacher: 'Стрелкова Е.В.', room: 'лаб.512 к.11', subgroup: '1-я подгруппа' },
+                    { time: '19:30 – 21:05', name: 'Информатика', type: 'Лабораторная', teacher: 'Кавальчук О.Н.', room: 'а.406 к.6', subgroup: '2-я подгруппа' },
                 ],
                 'Суббота': [
-                    { time: '12:00 – 13:35', name: 'Технология конструкционных материалов', type: 'Лекция', teacher: 'преп. Мамонов А.М.', room: 'а.4п к.8' },
-                    { time: '13:55 – 15:30', name: 'Английский язык', type: 'Практика', teacher: 'ст.пр. Лапко О.А.', room: 'а.430 к.18' },
+                    { time: '12:00 – 13:35', name: 'Технология конструкционных материалов', type: 'Лекция', teacher: 'Мамонов А.М.', room: 'а.4п к.8' },
+                    { time: '13:55 – 15:30', name: 'Английский язык', type: 'Практика', teacher: 'Лапко О.А.', room: 'а.430 к.18' },
                     { time: '15:40 – 17:15', name: 'Введение в инженерное образование', type: 'Практика', teacher: '?', room: 'а.307 к.6' },
                 ]
             },
             2: {
                 'Понедельник': [
-                    { time: '13:55 – 15:30', name: 'Информатика', type: 'Лабораторная', teacher: 'ст.пр. Кавальчук О.Н.', room: 'а.406 к.6', subgroup: '1-я подгруппа'  },
-                    { time: '15:40 – 17:15', name: 'Физкультура', type: ' ', teacher: 'ст.пр. Кришталь С.А., ст.пр. Панова Е.В.', room: 'к.11Б' },
-                    { time: '17:45 – 19:20', name: 'Инженерная графика', type: 'Лекция', teacher: 'ст.пр. Джежора С.В.', room: 'а.4п к.8' },
-                    { time: '19:30 – 21:05', name: 'Технология конструкционных материалов', type: 'Лабораторная', teacher: 'ст.пр. Чигринов В.Е., преп. Пузынин Я.С.', room: 'лаб.12 к.7', subgroup: '2-я подгруппа' },
+                    { time: '13:55 – 15:30', name: 'Информатика', type: 'Лабораторная', teacher: 'Кавальчук О.Н.', room: 'а.406 к.6', subgroup: '1-я подгруппа'  },
+                    { time: '15:40 – 17:15', name: 'Физкультура', type: ' ', teacher: 'Кришталь С.А., Панова Е.В.', room: 'к.11Б' },
+                    { time: '17:45 – 19:20', name: 'Инженерная графика', type: 'Лекция', teacher: 'Джежора С.В.', room: 'а.4п к.8' },
+                    { time: '19:30 – 21:05', name: 'Технология конструкционных материалов', type: 'Лабораторная', teacher: 'Чигринов В.Е., Пузынин Я.С.', room: 'лаб.12 к.7', subgroup: '2-я подгруппа' },
                 ],
                 'Вторник': [
-                    { time: '13:55 – 15:30', name: 'Английский язык', type: 'Практика', teacher: 'ст.пр. Лапко О.А.', room: 'а.430 к.18' },
-                    { time: '15:40 – 17:15', name: 'Математика', type: 'Лекция', teacher: 'доц. Крушевский Е.А.', room: 'а.308 к.6' },
-                    { time: '17:45 – 19:20', name: 'Физика', type: 'Лекция', teacher: 'доц. Бобученко Д.С.', room: 'а.2п к.17' },
-                    { time: '19:30 – 21:05', name: 'ОИЗ. Математика', type: 'Лекция', teacher: 'доц. Крушевский Е.А.', room: 'а.308 к.6' },
+                    { time: '13:55 – 15:30', name: 'Английский язык', type: 'Практика', teacher: 'Лапко О.А.', room: 'а.430 к.18' },
+                    { time: '15:40 – 17:15', name: 'Математика', type: 'Лекция', teacher: 'Крушевский Е.А.', room: 'а.308 к.6' },
+                    { time: '17:45 – 19:20', name: 'Физика', type: 'Лекция', teacher: 'Бобученко Д.С.', room: 'а.2п к.17' },
+                    { time: '19:30 – 21:05', name: 'ОИЗ. Математика', type: 'Лекция', teacher: 'Крушевский Е.А.', room: 'а.308 к.6' },
                 ],
                 'Среда': [
-                    { time: '13:55 – 15:30', name: 'Инженерная графика', type: 'Практика', teacher: 'ст.пр. Джежора С.В.', room: 'а.511 к.8' },
-                    { time: '15:40 – 17:15', name: 'Химия', type: 'Лекция', teacher: 'доц. Стрелкова Е.В.', room: 'а.2п к.17' },
-                    { time: '17:45 – 19:20', name: 'Физика', type: 'Лекция', teacher: 'доц. Бобученко Д.С.', room: 'а.2п к.17' },
+                    { time: '13:55 – 15:30', name: 'Инженерная графика', type: 'Практика', teacher: 'Джежора С.В.', room: 'а.511 к.8' },
+                    { time: '15:40 – 17:15', name: 'Химия', type: 'Лекция', teacher: 'Стрелкова Е.В.', room: 'а.2п к.17' },
+                    { time: '17:45 – 19:20', name: 'Физика', type: 'Лекция', teacher: 'Бобученко Д.С.', room: 'а.2п к.17' },
                     { time: '19:30 – 21:05', name: 'Введение в инженерное образование', type: 'Лекция', teacher: '?', room: 'а.405 к.6' },
                 ],
                 'Четверг': [
-                    { time: '12:00 – 13:35', name: 'Физика', type: 'Лабораторная', teacher: 'доц. Бобученко Д.С., ст.пр. Гарновская И.И.', room: 'лаб.412 к.17' },
-                    { time: '13:55 – 15:30', name: 'Физика', type: 'Лабораторная', teacher: 'доц. Бобученко Д.С., ст.пр. Гарновская И.И.', room: 'лаб.412 к.17' },
-                    { time: '15:40 – 17:15', name: 'Физкультура', type: ' ', teacher: 'ст.пр. Кришталь С.А., ст.пр. Панова Е.В.', room: 'к.11Б' },
-                    { time: '17:45 – 19:20', name: 'Инженерная графика', type: 'Практика', teacher: 'ст.пр. Джежора С.В.', room: 'а.510 к.8' },
-                    { time: '19:30 – 21:05', name: 'ОИЗ.Математика', type: 'Практика', teacher: 'ст.пр. Доронина А.В.', room: 'а.220 к.6' },
+                    { time: '12:00 – 13:35', name: 'Физика', type: 'Лабораторная', teacher: 'Бобученко Д.С., Гарновская И.И.', room: 'лаб.412 к.17' },
+                    { time: '13:55 – 15:30', name: 'Физика', type: 'Лабораторная', teacher: 'Бобученко Д.С., Гарновская И.И.', room: 'лаб.412 к.17' },
+                    { time: '15:40 – 17:15', name: 'Физкультура', type: ' ', teacher: 'Кришталь С.А., Панова Е.В.', room: 'к.11Б' },
+                    { time: '17:45 – 19:20', name: 'Инженерная графика', type: 'Практика', teacher: 'Джежора С.В.', room: 'а.510 к.8' },
+                    { time: '19:30 – 21:05', name: 'ОИЗ.Математика', type: 'Практика', teacher: 'Доронина А.В.', room: 'а.220 к.6' },
                 ],
                 'Пятница': [
-                    { time: '13:55 – 15:30', name: 'Физика', type: 'Практика', teacher: 'доц. Бобученко Д.С.', room: 'а.201 к.17' },
-                    { time: '15:40 – 17:15', name: 'Математика', type: 'Практика', teacher: 'ст.пр. Доронина А.В.', room: 'а.221к.6' },
-                    { time: '17:45 – 19:20', name: 'Информатика', type: 'Лабораторная', teacher: 'ст.пр. Кавальчук О.Н.', room: 'а.406 к.6', subgroup: '1-я подгруппа' },
-                    { time: '17:45 – 19:20', name: 'Технология конструкционных материалов', type: 'Лабораторная', teacher: 'ст.пр. Чигринов В.Е., преп. Пузынин Я.С.', room: 'лаб.12 к.7', subgroup: '2-я подгруппа' },
-                    { time: '19:30 – 21:05', name: 'Химия', type: 'Лабораторная', teacher: 'доц. Стрелкова Е.В.', room: 'лаб.512 к.11', subgroup: '1-я подгруппа' },
-                    { time: '19:30 – 21:05', name: 'Информатика', type: 'Лабораторная', teacher: 'ст.пр. Кавальчук О.Н.', room: 'а.406 к.6', subgroup: '2-я подгруппа' },
+                    { time: '13:55 – 15:30', name: 'Физика', type: 'Практика', teacher: 'Бобученко Д.С.', room: 'а.201 к.17' },
+                    { time: '15:40 – 17:15', name: 'Математика', type: 'Практика', teacher: 'Доронина А.В.', room: 'а.221 к.6' },
+                    { time: '17:45 – 19:20', name: 'Информатика', type: 'Лабораторная', teacher: 'Кавальчук О.Н.', room: 'а.406 к.6', subgroup: '1-я подгруппа' },
+                    { time: '17:45 – 19:20', name: 'Технология конструкционных материалов', type: 'Лабораторная', teacher: 'Чигринов В.Е., Пузынин Я.С.', room: 'лаб.12 к.7', subgroup: '2-я подгруппа' },
+                    { time: '19:30 – 21:05', name: 'Химия', type: 'Лабораторная', teacher: 'Стрелкова Е.В.', room: 'лаб.512 к.11', subgroup: '1-я подгруппа' },
+                    { time: '19:30 – 21:05', name: 'Информатика', type: 'Лабораторная', teacher: 'Кавальчук О.Н.', room: 'а.406 к.6', subgroup: '2-я подгруппа' },
                 ],
                 'Суббота': [
-                    { time: '12:00 – 13:35', name: 'Технология конструкционных материалов', type: 'Лекция', teacher: 'преп. Мамонов А.М.', room: 'а.4п к.8'},
+                    { time: '12:00 – 13:35', name: 'Технология конструкционных материалов', type: 'Лекция', teacher: 'Мамонов А.М.', room: 'а.4п к.8'},
                     { time: '13:55 – 15:30', name: 'Профессиональное обучение по профессиям рабочих', type: 'Лабораторная', teacher: '?', room: 'Мастерская к.7' },
                     { time: '15:40 – 17:15', name: 'Профессиональное обучение по профессиям рабочих', type: 'Лабораторная', teacher: '?', room: 'Мастерская к.7' },
                 ]
@@ -753,7 +1372,77 @@
         };
 
         // ================================================================
-        // 2. СОСТОЯНИЕ
+        // 2. ДАННЫЕ ДЛЯ СПИСКА ГРУППЫ
+        // ================================================================
+        const groupMembers = [
+            { name: 'Бамбизов Эрик Сергеевич', subgroup: '1-я', note: '' },
+            { name: 'Бовтот Михаил Викторович', subgroup: '2-я', note: '' },
+            { name: 'Васильченко Виталий Сергеевич', subgroup: '1-я', note: '' },
+            { name: 'Войтеховский Савелий Валерьевич', subgroup: '2-я', note: '' },
+            { name: 'Гонтаренко Алексей Андреевич', subgroup: '1-я', note: '' },
+            { name: 'Здунюк Степан Вадимович', subgroup: '1-я', note: '' },
+            { name: 'Кравцова Юлия Дмитриевна', subgroup: '2-я', note: '' },
+            { name: 'Куликов Роман Анатольевич', subgroup: '1-я', note: '' },
+            { name: 'Кулинчик Матвей Алексеевич', subgroup: '1-я', note: '' },
+            { name: 'Лавинецкий Никита Дмитриевич', subgroup: '1-я', note: '' },
+            { name: 'Ластовский Вадим Юрьевич', subgroup: '2-я', note: '' },
+            { name: 'Маковский Вадим Александрович', subgroup: '2-я', note: '' },
+            { name: 'Мелешко Глеб Викторович', subgroup: '1-я', note: '30.06.2006   +375295533648' },
+            { name: 'Парахадов Малик', subgroup: '-', note: '' },
+            { name: 'Росликов Константин Михайлович', subgroup: '1-я', note: '' },
+            { name: 'Савчик Илья Дмитриевич', subgroup: '2-я', note: '' },
+            { name: 'Селюжицкий Андрей Дмитриевич', subgroup: '2-я', note: '' },
+            { name: 'Тарабаш Никита Дмитриевич', subgroup: '2-я', note: '' },
+            { name: 'Точило Артём Сергеевич', subgroup: '2-я', note: '' },
+            { name: 'Хомич Роман Сергеевич', subgroup: '2-я', note: '' },
+            { name: 'Шагун Рустам Сергеевич', subgroup: '1-я', note: '' },
+        ];
+
+        // ================================================================
+        // 3. ДАННЫЕ ДЛЯ ЭКЗАМЕНОВ
+        // ================================================================
+        const examsData = [
+            { subject: 'Математика', status: 'Экзамен', date: '-', note: '' },
+            { subject: 'Физика', status: 'Экзамен', date: '-', note: '' },
+            { subject: 'Информатика', status: 'Экзамен', date: '-', note: '' },
+            { subject: 'Химия', status: 'Экзамен', date: '-', note: '' },
+            { subject: 'Инженерная графика', status: 'Экзамен', date: '-', note: '' },
+            { subject: 'Технология конструкционных материалов', status: 'Зачёт', date: '-', note: '' },
+            { subject: 'Английский язык', status: 'Зачёт', date: '-', note: '' },
+            { subject: 'Введение в инженерное образование', status: 'Экзамен', date: '-', note: '' },
+            { subject: 'Физкультура', status: 'Зачёт', date: '-', note: '' },
+        ];
+
+        // ================================================================
+        // 4. РАСКРЫТИЕ ИМЁН ПРЕПОДАВАТЕЛЕЙ (без ст.пр. и доц.)
+        // ================================================================
+        const teacherFullNames = {
+            'Кавальчук О.Н.': 'Кавальчук Ольга Николаевна',
+            'Кришталь С.А.': 'Кришталь Сергей Александрович',
+            'Панова Е.В.': 'Панова Елена Владимировна',
+            'Джежора С.В.': 'Джежора Сергей Викторович',
+            'Лапко О.А.': 'Лапко Ольга Александровна',
+            'Крушевский Е.А.': 'Крушевский Евгений Александрович',
+            'Бобученко Д.С.': 'Бобученко Дмитрий Сергеевич',
+            'Стрелкова Е.В.': 'Стрелкова Елена Владимировна',
+            'Доронина А.В.': 'Доронина Анна Владимировна',
+            'Чигринов В.Е.': 'Чигринов Владимир Евгеньевич',
+            'Пузынин Я.С.': 'Пузынин Ярослав Сергеевич',
+            'Мамонов А.М.': 'Мамонов Алексей Михайлович',
+            'Гарновская И.И.': 'Гарновская Ирина Ивановна',
+        };
+
+        function expandTeacherName(shortName) {
+            if (!shortName) return shortName;
+            const trimmed = shortName.trim();
+            if (teacherFullNames[trimmed]) {
+                return teacherFullNames[trimmed];
+            }
+            return trimmed;
+        }
+
+        // ================================================================
+        // 5. СОСТОЯНИЕ
         // ================================================================
         const dayNames = ['Воскресенье', 'Понедельник', 'Вторник', 'Среда', 'Четверг', 'Пятница', 'Суббота'];
         const shortDayNames = ['Вс', 'Пн', 'Вт', 'Ср', 'Чт', 'Пт', 'Сб'];
@@ -776,7 +1465,7 @@
         console.log(`📅 Реальная неделя: ${realWeek}, реальный день: ${dayNames[realDayIndex]}`);
 
         // ================================================================
-        // 3. ТЕМНАЯ ТЕМА
+        // 6. ТЕМНАЯ ТЕМА
         // ================================================================
         function toggleTheme() {
             isDarkTheme = !isDarkTheme;
@@ -792,112 +1481,203 @@
         }
 
         // ================================================================
-        // 4. ТАЙМЕР
+        // 7. ТАЙМЕР
         // ================================================================
-        function updateTimer() {
+        function updateTimerAndHighlight() {
             const now = new Date();
             const currentMinutes = now.getHours() * 60 + now.getMinutes();
-            const today = now.getDay();
-            const todayIndex = today === 0 ? 6 : today;
-            
+            const todayIndex = now.getDay();
+
             const timerDisplay = document.getElementById('timerDisplay');
             const timerLabel = document.getElementById('timerLabel');
-            const timerPairName = document.getElementById('timerPairName');
+            const timerSubRow = document.getElementById('timerSubRow');
+            const timerSubLabel = document.getElementById('timerSubLabel');
+            const timerSubDisplay = document.getElementById('timerSubDisplay');
+
+            if (todayIndex === 0) {
+                timerDisplay.textContent = '😴';
+                timerDisplay.className = 'timer-display weekend';
+                timerLabel.textContent = 'Сегодня выходной';
+                timerSubRow.style.display = 'none';
+                document.querySelectorAll('.pair-card.current, .pair-card.next').forEach(el => {
+                    el.classList.remove('current', 'next');
+                });
+                return;
+            }
 
             const weekData = schedule[realWeek];
             if (!weekData) {
                 timerDisplay.textContent = '--:--:--';
                 timerDisplay.className = 'timer-display done';
                 timerLabel.textContent = '⚠️ Ошибка';
-                timerPairName.textContent = 'Нет данных';
+                timerSubRow.style.display = 'none';
                 return;
             }
-            
+
             const dayName = dayNames[todayIndex];
             const pairs = weekData[dayName] || [];
-            
-            if (pairs.length === 0) {
-                timerDisplay.textContent = '';
+
+            const groupedByTime = {};
+            pairs.forEach(pair => {
+                if (!groupedByTime[pair.time]) {
+                    groupedByTime[pair.time] = [];
+                }
+                groupedByTime[pair.time].push(pair);
+            });
+
+            const timeKeys = Object.keys(groupedByTime).sort();
+
+            if (timeKeys.length === 0) {
+                timerDisplay.textContent = '😌';
                 timerDisplay.className = 'timer-display done';
                 timerLabel.textContent = 'Пар нет';
-                timerPairName.textContent = 'Пора домой';
+                timerSubRow.style.display = 'none';
+                document.querySelectorAll('.pair-card.current, .pair-card.next').forEach(el => {
+                    el.classList.remove('current', 'next');
+                });
                 return;
             }
 
-            let currentPair = null;
-            let nextPair = null;
+            let currentSlot = null;
+            let nextSlot = null;
+            let currentTime = null;
+            let nextTime = null;
 
-            for (let i = 0; i < pairs.length; i++) {
-                const pair = pairs[i];
-                const [start, end] = pair.time.split(' – ');
+            for (const time of timeKeys) {
+                const [start, end] = time.split(' – ');
                 const [startH, startM] = start.split(':').map(Number);
                 const [endH, endM] = end.split(':').map(Number);
                 const startTotal = startH * 60 + startM;
                 const endTotal = endH * 60 + endM;
 
                 if (currentMinutes >= startTotal && currentMinutes < endTotal) {
-                    currentPair = pair;
+                    currentSlot = groupedByTime[time];
+                    currentTime = time;
                     break;
                 }
-                if (currentMinutes < startTotal && !nextPair) {
-                    nextPair = pair;
+                if (currentMinutes < startTotal && !nextSlot) {
+                    nextSlot = groupedByTime[time];
+                    nextTime = time;
                 }
             }
 
-            if (currentPair) {
-                const [start, end] = currentPair.time.split(' – ');
+            if (currentSlot && !nextSlot) {
+                const currentIndex = timeKeys.indexOf(currentTime);
+                if (currentIndex < timeKeys.length - 1) {
+                    nextSlot = groupedByTime[timeKeys[currentIndex + 1]];
+                    nextTime = timeKeys[currentIndex + 1];
+                }
+            }
+
+            document.querySelectorAll('.pair-card.current, .pair-card.next').forEach(el => {
+                el.classList.remove('current', 'next');
+            });
+
+            const isTodayView = (currentDayIndex === realDayIndex && currentWeek === realWeek);
+            const nowSeconds = now.getHours() * 3600 + now.getMinutes() * 60 + now.getSeconds();
+
+            function formatTime(seconds) {
+                const h = Math.floor(seconds / 3600);
+                const m = Math.floor((seconds % 3600) / 60);
+                const s = Math.floor(seconds % 60);
+                return { hours: h, mins: m, secs: s };
+            }
+
+            if (currentSlot) {
+                const [start, end] = currentTime.split(' – ');
                 const [endH, endM] = end.split(':').map(Number);
-                
-                const nowSeconds = now.getHours() * 3600 + now.getMinutes() * 60 + now.getSeconds();
                 const endSeconds = endH * 3600 + endM * 60;
-                const remainSeconds = endSeconds - nowSeconds;
-                
-                const hours = Math.floor(remainSeconds / 3600);
-                const mins = Math.floor((remainSeconds % 3600) / 60);
-                const secs = remainSeconds % 60;
-                
-                timerDisplay.textContent = `${String(hours).padStart(2, '0')}:${String(mins).padStart(2, '0')}:${String(secs).padStart(2, '0')}`;
+                const remain = endSeconds - nowSeconds;
+                const t = formatTime(remain);
+
+                timerDisplay.textContent = `${String(t.hours).padStart(2, '0')}:${String(t.mins).padStart(2, '0')}:${String(t.secs).padStart(2, '0')}`;
                 timerDisplay.className = 'timer-display ongoing';
-                timerLabel.textContent = '🔥 Идёт пара, осталось';
-                timerPairName.textContent = `${currentPair.name} (${currentPair.type}) · ${currentPair.room}`;
+                timerLabel.textContent = `До конца пары:`;
+
+                if (isTodayView) {
+                    highlightPairsByTime(currentTime, 'current');
+                }
+
+                if (nextSlot) {
+                    const [nextStart] = nextTime.split(' – ');
+                    const [nextH, nextM] = nextStart.split(':').map(Number);
+                    const nextStartSeconds = nextH * 3600 + nextM * 60;
+                    const wait = nextStartSeconds - nowSeconds;
+
+                    if (wait > 0 && wait <= 43200) {
+                        const wt = formatTime(wait);
+                        timerSubRow.style.display = 'flex';
+                        timerSubLabel.textContent = 'До начала следующей пары:';
+                        timerSubDisplay.textContent = `${String(wt.hours).padStart(2, '0')}:${String(wt.mins).padStart(2, '0')}:${String(wt.secs).padStart(2, '0')}`;
+                        timerSubDisplay.className = 'timer-sub-display waiting';
+                    } else if (wait > 43200) {
+                        timerSubRow.style.display = 'none';
+                    } else {
+                        timerSubRow.style.display = 'none';
+                    }
+                } else {
+                    timerSubRow.style.display = 'none';
+                }
                 return;
             }
 
-            if (nextPair) {
-                const [start, end] = nextPair.time.split(' – ');
-                const [startH, startM] = start.split(':').map(Number);
-                
-                const nowSeconds = now.getHours() * 3600 + now.getMinutes() * 60 + now.getSeconds();
-                const startSeconds = startH * 3600 + startM * 60;
-                const waitSeconds = startSeconds - nowSeconds;
-                
-                const hours = Math.floor(waitSeconds / 3600);
-                const mins = Math.floor((waitSeconds % 3600) / 60);
-                const secs = waitSeconds % 60;
-                
-                timerDisplay.textContent = `${String(hours).padStart(2, '0')}:${String(mins).padStart(2, '0')}:${String(secs).padStart(2, '0')}`;
-                timerDisplay.className = 'timer-display waiting';
-                timerLabel.textContent = 'До начала пары';
-                timerPairName.textContent = `${nextPair.name} (${nextPair.type}) · ${nextPair.room}`;
+            if (nextSlot) {
+                const [nextStart] = nextTime.split(' – ');
+                const [nextH, nextM] = nextStart.split(':').map(Number);
+                const nextStartSeconds = nextH * 3600 + nextM * 60;
+                const wait = nextStartSeconds - nowSeconds;
+
+                if (wait > 0 && wait <= 43200) {
+                    const wt = formatTime(wait);
+                    timerDisplay.textContent = `${String(wt.hours).padStart(2, '0')}:${String(wt.mins).padStart(2, '0')}:${String(wt.secs).padStart(2, '0')}`;
+                    timerDisplay.className = 'timer-display waiting';
+                    timerLabel.textContent = 'До начала следующей пары:';
+                    timerSubRow.style.display = 'none';
+
+                    if (isTodayView) {
+                        highlightPairsByTime(nextTime, 'next');
+                    }
+                } else if (wait > 43200) {
+                    timerDisplay.textContent = '⏳';
+                    timerDisplay.className = 'timer-display done';
+                    timerLabel.textContent = 'Следующая пара позже 12 часов';
+                    timerSubRow.style.display = 'none';
+                } else {
+                    timerDisplay.textContent = '✅';
+                    timerDisplay.className = 'timer-display done';
+                    timerLabel.textContent = 'Скоро начнётся';
+                    timerSubRow.style.display = 'none';
+                }
                 return;
             }
 
             timerDisplay.textContent = '✅';
             timerDisplay.className = 'timer-display done';
             timerLabel.textContent = 'Все пары закончились';
-            timerPairName.textContent = '';
+            timerSubRow.style.display = 'none';
         }
 
         // ================================================================
-        // 5. ЗАМЕТКИ (localStorage)
+        // 8. ПОДСВЕТКА ПАР ПО ВРЕМЕНИ
+        // ================================================================
+        function highlightPairsByTime(time, className) {
+            const cards = document.querySelectorAll('.pair-card');
+            cards.forEach(card => {
+                const timeElement = card.querySelector('.time');
+                if (timeElement && timeElement.textContent.trim() === time) {
+                    card.classList.add(className);
+                }
+            });
+        }
+
+        // ================================================================
+        // 9. ЗАМЕТКИ (localStorage)
         // ================================================================
         
-        // Уникальный ID для каждой пары (день + время + название)
         function getPairId(pair, dayName, weekNum) {
             return `${weekNum}_${dayName}_${pair.time}_${pair.name}`.replace(/\s/g, '_');
         }
 
-        // Сохранить заметку
         function saveNote(pairId, text) {
             const notes = JSON.parse(localStorage.getItem('userNotes') || '{}');
             if (text.trim() === '') {
@@ -907,7 +1687,6 @@
             }
             localStorage.setItem('userNotes', JSON.stringify(notes));
             
-            // Показать индикатор сохранения
             const indicator = document.getElementById(`note_saved_${pairId}`);
             if (indicator) {
                 indicator.classList.add('show');
@@ -915,14 +1694,70 @@
             }
         }
 
-        // Загрузить заметку
         function loadNote(pairId) {
             const notes = JSON.parse(localStorage.getItem('userNotes') || '{}');
             return notes[pairId] || '';
         }
 
         // ================================================================
-        // 6. ОТРИСОВКА
+        // 10. ПОИСК
+        // ================================================================
+        let searchQuery = '';
+
+        function searchSchedule(query) {
+            searchQuery = query.trim().toLowerCase();
+            const clearBtn = document.getElementById('searchClear');
+            
+            if (searchQuery === '') {
+                clearBtn.classList.remove('show');
+            } else {
+                clearBtn.classList.add('show');
+            }
+            
+            const cards = document.querySelectorAll('.pair-card');
+            cards.forEach(card => {
+                const text = card.textContent.toLowerCase();
+                if (text.includes(searchQuery)) {
+                    card.classList.remove('hidden');
+                } else {
+                    card.classList.add('hidden');
+                }
+            });
+            
+            updateVisibleCount();
+        }
+
+        function clearSearch() {
+            document.getElementById('searchInput').value = '';
+            searchQuery = '';
+            document.getElementById('searchClear').classList.remove('show');
+            document.querySelectorAll('.pair-card').forEach(c => c.classList.remove('hidden'));
+            updateVisibleCount();
+        }
+
+        function updateVisibleCount() {
+            const visible = document.querySelectorAll('.pair-card:not(.hidden)').length;
+            const countEl = document.getElementById('pairCount');
+            if (searchQuery !== '') {
+                countEl.textContent = `${visible} из ${getUniqueTimeSlots().length} пар`;
+            } else {
+                const total = getUniqueTimeSlots().length;
+                countEl.textContent = total + ' пары';
+            }
+        }
+
+        function getUniqueTimeSlots() {
+            const weekData = schedule[currentWeek];
+            if (!weekData) return [];
+            const dayName = dayNames[currentDayIndex];
+            const pairs = weekData[dayName] || [];
+            const uniqueTimes = new Set();
+            pairs.forEach(p => uniqueTimes.add(p.time));
+            return Array.from(uniqueTimes);
+        }
+
+        // ================================================================
+        // 11. ОТРИСОВКА
         // ================================================================
 
         function render() {
@@ -932,11 +1767,17 @@
             const dayName = dayNames[currentDayIndex];
             const pairs = weekData[dayName] || [];
 
+            const isSunday = (currentDayIndex === 0);
+            const isEmpty = pairs.length === 0;
+
             document.querySelectorAll('.week-switch button').forEach(b => {
-                b.classList.remove('real-week');
+                b.classList.remove('real-week', 'selected-week');
                 const weekNum = parseInt(b.dataset.week);
                 if (weekNum === realWeek) {
                     b.classList.add('real-week');
+                }
+                if (weekNum === currentWeek) {
+                    b.classList.add('selected-week');
                 }
             });
 
@@ -949,7 +1790,7 @@
                 btn.innerHTML = `${shortDayNames[i]} <span class="day-num">${isActive ? '●' : ''}</span>`;
                 if (isActive) btn.classList.add('active');
                 if (isToday) btn.classList.add('today-btn');
-                btn.onclick = () => { currentDayIndex = i; render(); updateTimer(); };
+                btn.onclick = () => { currentDayIndex = i; render(); updateTimerAndHighlight(); };
                 nav.appendChild(btn);
             }
 
@@ -961,15 +1802,30 @@
             }
 
             document.getElementById('dayTitle').textContent = dayName;
-            document.getElementById('pairCount').textContent = pairs.length + ' пары';
 
             const container = document.getElementById('pairsContainer');
             container.innerHTML = '';
 
-            if (pairs.length === 0) {
+            if (isSunday) {
+                document.getElementById('pairCount').textContent = 'Выходной';
+                container.innerHTML = `
+                    <div class="empty-day weekend">
+                        <span class="big-emoji">😴</span>
+                        <div class="weekend-title">Выходной</div>
+                        <p style="font-size:0.9rem; opacity:0.7;">Сегодня можно отдохнуть</p>
+                    </div>
+                `;
+                document.querySelectorAll('.pair-card.current, .pair-card.next').forEach(el => {
+                    el.classList.remove('current', 'next');
+                });
+                return;
+            }
+
+            if (isEmpty) {
+                document.getElementById('pairCount').textContent = '0 пар';
                 container.innerHTML = `
                     <div class="empty-day">
-                        <span class="big-emoji"></span>
+                        <span class="big-emoji">😌</span>
                         Пар нет
                         <br><span style="font-size:0.8rem;">Можно отдохнуть</span>
                     </div>
@@ -977,68 +1833,219 @@
                 return;
             }
 
-            const now = new Date();
-            const currentMinutes = now.getHours() * 60 + now.getMinutes();
-            let foundCurrent = false;
+            const uniqueTimes = getUniqueTimeSlots();
+            document.getElementById('pairCount').textContent = uniqueTimes.length + ' пары';
 
-            const isRealDay = (currentDayIndex === realDayIndex);
-            const isRealWeek = (currentWeek === realWeek);
-            const shouldHighlight = isRealDay && isRealWeek;
-
-            pairs.forEach((pair) => {
-                const card = document.createElement('div');
-                card.className = 'pair-card';
-
-                if (shouldHighlight) {
-                    const [start, end] = pair.time.split(' – ');
-                    const [startH, startM] = start.split(':').map(Number);
-                    const [endH, endM] = end.split(':').map(Number);
-                    const startTotal = startH * 60 + startM;
-                    const endTotal = endH * 60 + endM;
-
-                    if (currentMinutes >= startTotal && currentMinutes < endTotal) {
-                        card.classList.add('current');
-                        foundCurrent = true;
-                    } else if (!foundCurrent && currentMinutes < startTotal) {
-                        card.classList.add('next');
-                        foundCurrent = true;
-                    }
+            const groupedByTime = {};
+            pairs.forEach(pair => {
+                if (!groupedByTime[pair.time]) {
+                    groupedByTime[pair.time] = [];
                 }
+                groupedByTime[pair.time].push(pair);
+            });
 
-                let typeClass = 'lecture';
-                if (pair.type.includes('Практик')) typeClass = 'practice';
-                else if (pair.type.includes('Лаб')) typeClass = 'lab';
+            const timeKeys = Object.keys(groupedByTime).sort();
 
-                // Генерируем ID для заметки
-                const pairId = getPairId(pair, dayName, currentWeek);
-                const savedNote = loadNote(pairId);
+            timeKeys.forEach(time => {
+                const pairsAtTime = groupedByTime[time];
+                
+                const hasSubgroup1 = pairsAtTime.some(p => p.subgroup === '1-я подгруппа');
+                const hasSubgroup2 = pairsAtTime.some(p => p.subgroup === '2-я подгруппа');
+                
+                if (hasSubgroup1 || hasSubgroup2) {
+                    const pair1 = pairsAtTime.find(p => p.subgroup === '1-я подгруппа') || null;
+                    const pair2 = pairsAtTime.find(p => p.subgroup === '2-я подгруппа') || null;
+                    const commonPairs = pairsAtTime.filter(p => !p.subgroup);
+                    
+                    commonPairs.forEach(commonPair => {
+                        const card = createPairCard(commonPair, dayName);
+                        container.appendChild(card);
+                    });
+                    
+                    if (pair1 || pair2) {
+                        const card = document.createElement('div');
+                        card.className = 'pair-card';
+                        
+                        const timeStr = pair1 ? pair1.time : (pair2 ? pair2.time : '');
+                        const typeStr = pair1 ? pair1.type : (pair2 ? pair2.type : '');
+                        const typeClass = getTypeClass(typeStr);
+                        
+                        card.innerHTML = `
+                            <div class="time-row">
+                                <span class="time">${timeStr}</span>
+                                <span class="type-badge ${typeClass}">${typeStr}</span>
+                            </div>
+                            <div class="subgroup-wrapper">
+                                <div class="subgroup-col">
+                                    <div class="subgroup-col-inner">
+                                        <div class="subgroup-label">👥 1-я подгруппа</div>
+                                        ${pair1 ? `
+                                            <div class="subgroup-subject">${pair1.name}</div>
+                                            <div class="subgroup-teacher">${renderTeacherNames(pair1.teacher)}</div>
+                                            <div class="subgroup-room">📍 ${pair1.room}</div>
+                                            <div class="subgroup-note">
+                                                <textarea class="note-input" 
+                                                          id="note_input_${getPairId(pair1, dayName, currentWeek)}"
+                                                          placeholder="📝 Ваша заметка..."
+                                                          onchange="saveNote('${getPairId(pair1, dayName, currentWeek)}', this.value)"
+                                                >${loadNote(getPairId(pair1, dayName, currentWeek))}</textarea>
+                                                <span class="note-saved" id="note_saved_${getPairId(pair1, dayName, currentWeek)}">✅ Сохранено</span>
+                                            </div>
+                                        ` : `
+                                            <div class="subgroup-empty">— нет пары</div>
+                                        `}
+                                    </div>
+                                </div>
+                                <div class="subgroup-col">
+                                    <div class="subgroup-col-inner">
+                                        <div class="subgroup-label">👥 2-я подгруппа</div>
+                                        ${pair2 ? `
+                                            <div class="subgroup-subject">${pair2.name}</div>
+                                            <div class="subgroup-teacher">${renderTeacherNames(pair2.teacher)}</div>
+                                            <div class="subgroup-room">📍 ${pair2.room}</div>
+                                            <div class="subgroup-note">
+                                                <textarea class="note-input" 
+                                                          id="note_input_${getPairId(pair2, dayName, currentWeek)}"
+                                                          placeholder="📝 Ваша заметка..."
+                                                          onchange="saveNote('${getPairId(pair2, dayName, currentWeek)}', this.value)"
+                                                >${loadNote(getPairId(pair2, dayName, currentWeek))}</textarea>
+                                                <span class="note-saved" id="note_saved_${getPairId(pair2, dayName, currentWeek)}">✅ Сохранено</span>
+                                            </div>
+                                        ` : `
+                                            <div class="subgroup-empty">— нет пары</div>
+                                        `}
+                                    </div>
+                                </div>
+                            </div>
+                        `;
+                        container.appendChild(card);
+                    }
+                } else {
+                    pairsAtTime.forEach(pair => {
+                        const card = createPairCard(pair, dayName);
+                        container.appendChild(card);
+                    });
+                }
+            });
+            
+            if (searchQuery !== '') {
+                searchSchedule(searchQuery);
+            }
+            
+            setTimeout(updateTimerAndHighlight, 50);
+        }
 
-                card.innerHTML = `
-                    <div class="time-row">
-                        <span class="time">${pair.time}</span>
-                        <span class="type-badge ${typeClass}">${pair.type}</span>
-                    </div>
-                    <div class="subject">${pair.name}</div>
-                    ${pair.subgroup ? `<div class="subgroup-badge"> ${pair.subgroup}</div>` : ''}
-                    <div class="footer-row">
-                        <span class="teacher"> ${pair.teacher}</span>
-                        <span class="room"> ${pair.room}</span>
-                    </div>
-                    <div class="note-area">
-                        <textarea class="note-input" 
-                                  id="note_input_${pairId}"
-                                  placeholder=" Ваша заметка..."
-                                  onchange="saveNote('${pairId}', this.value)"
-                        >${savedNote}</textarea>
-                        <span class="note-saved" id="note_saved_${pairId}">✅ Сохранено</span>
-                    </div>
-                `;
-                container.appendChild(card);
+        function getTypeClass(type) {
+            if (type.includes('Практик')) return 'practice';
+            if (type.includes('Лаб')) return 'lab';
+            return 'lecture';
+        }
+
+        // ================================================================
+        // 12. ОТРИСОВКА ПРЕПОДАВАТЕЛЕЙ (кликабельные, по одному)
+        // ================================================================
+        function renderTeacherNames(teacherStr) {
+            if (!teacherStr || teacherStr === '?') return teacherStr || '?';
+            
+            // Разбиваем по запятой
+            const names = teacherStr.split(',').map(s => s.trim()).filter(s => s.length > 0);
+            
+            if (names.length === 0) return teacherStr;
+            
+            // Если один преподаватель
+            if (names.length === 1) {
+                const short = names[0];
+                const full = expandTeacherName(short);
+                return `<span class="teacher-name" data-short="${short.replace(/'/g, "\\'")}" data-full="${full.replace(/'/g, "\\'")}" onclick="toggleTeacherName(this)">${short}</span>`;
+            }
+            
+            // Если несколько — оборачиваем каждого
+            return names.map(name => {
+                const short = name.trim();
+                const full = expandTeacherName(short);
+                return `<span class="teacher-name" data-short="${short.replace(/'/g, "\\'")}" data-full="${full.replace(/'/g, "\\'")}" onclick="toggleTeacherName(this)">${short}</span>`;
+            }).join(', ');
+        }
+
+        function createPairCard(pair, dayName) {
+            const card = document.createElement('div');
+            card.className = 'pair-card';
+
+            const typeClass = getTypeClass(pair.type);
+            const pairId = getPairId(pair, dayName, currentWeek);
+            const savedNote = loadNote(pairId);
+
+            card.innerHTML = `
+                <div class="time-row">
+                    <span class="time">${pair.time}</span>
+                    <span class="type-badge ${typeClass}">${pair.type}</span>
+                </div>
+                <div class="subject">${pair.name}</div>
+                ${pair.subgroup ? `<div class="subgroup-badge">👥 ${pair.subgroup}</div>` : ''}
+                <div class="footer-row">
+                    <span class="teacher">${renderTeacherNames(pair.teacher)}</span>
+                    <span class="room">📍 ${pair.room}</span>
+                </div>
+                <div class="note-area">
+                    <textarea class="note-input" 
+                              id="note_input_${pairId}"
+                              placeholder="📝 Ваша заметка..."
+                              onchange="saveNote('${pairId}', this.value)"
+                    >${savedNote}</textarea>
+                    <span class="note-saved" id="note_saved_${pairId}">✅ Сохранено</span>
+                </div>
+            `;
+            return card;
+        }
+
+        // ================================================================
+        // 13. ПЕРЕКЛЮЧЕНИЕ ИМЕНИ ПРЕПОДАВАТЕЛЯ
+        // ================================================================
+        function toggleTeacherName(element) {
+            const short = element.dataset.short;
+            const full = element.dataset.full;
+            const current = element.textContent.trim();
+            if (current === short) {
+                element.textContent = full;
+            } else {
+                element.textContent = short;
+            }
+        }
+
+        // ================================================================
+        // 14. ПАСХАЛКА: ТРОЙНОЙ КЛИК ПО ВОДЯНОМУ ЗНАКУ
+        // ================================================================
+        let watermarkClickCount = 0;
+        let watermarkTimer = null;
+
+        document.getElementById('watermark').addEventListener('click', function(e) {
+            watermarkClickCount++;
+            
+            clearTimeout(watermarkTimer);
+            watermarkTimer = setTimeout(() => {
+                watermarkClickCount = 0;
+            }, 500);
+            
+            if (watermarkClickCount === 3) {
+                watermarkClickCount = 0;
+                playEasterEggSound();
+            }
+        });
+
+        function playEasterEggSound() {
+            const audio = document.getElementById('easterEggSound');
+            if (!audio) return;
+            
+            audio.currentTime = 0;
+            audio.volume = 1.0; // 100% громкость
+            audio.loop = false; // не зациклен
+            audio.play().catch(e => {
+                console.log('⚠️ Звук не воспроизведён:', e);
             });
         }
 
         // ================================================================
-        // 7. ПЕРЕКЛЮЧЕНИЕ
+        // 15. ПЕРЕКЛЮЧЕНИЕ ДНЕЙ И НЕДЕЛЬ
         // ================================================================
         function changeDay(delta) {
             currentDayIndex += delta;
@@ -1055,7 +2062,7 @@
         }
 
         // ================================================================
-        // 8. КАРТА
+        // 16. КАРТА
         // ================================================================
         function openMap() {
             document.getElementById('mapOverlay').classList.add('active');
@@ -1067,14 +2074,74 @@
             document.body.style.overflow = '';
         }
 
+        // ================================================================
+        // 17. СПИСОК ГРУППЫ
+        // ================================================================
+        function openGroupList() {
+            const tbody = document.getElementById('groupListBody');
+            tbody.innerHTML = '';
+            groupMembers.forEach((member, index) => {
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td>${index + 1}</td>
+                    <td>${member.name}</td>
+                    <td><span class="subgroup-tag">${member.subgroup}</span></td>
+                    <td>${member.note || '—'}</td>
+                `;
+                tbody.appendChild(tr);
+            });
+            document.getElementById('groupListOverlay').classList.add('active');
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeGroupList(e) {
+            if (e && e.target !== e.currentTarget) return;
+            document.getElementById('groupListOverlay').classList.remove('active');
+            document.body.style.overflow = '';
+        }
+
+        // ================================================================
+        // 18. ЭКЗАМЕНЫ
+        // ================================================================
+        function openExams() {
+            const tbody = document.getElementById('examsBody');
+            tbody.innerHTML = '';
+            examsData.forEach(exam => {
+                const tr = document.createElement('tr');
+                let statusClass = 'exam-status';
+                if (exam.status === 'Экзамен') statusClass += ' pass';
+                else if (exam.status === 'Зачёт') statusClass += ' scheduled';
+                tr.innerHTML = `
+                    <td><strong>${exam.subject}</strong></td>
+                    <td><span class="${statusClass}">${exam.status}</span></td>
+                    <td>${exam.date}</td>
+                    <td>${exam.note || '—'}</td>
+                `;
+                tbody.appendChild(tr);
+            });
+            document.getElementById('examsOverlay').classList.add('active');
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeExams(e) {
+            if (e && e.target !== e.currentTarget) return;
+            document.getElementById('examsOverlay').classList.remove('active');
+            document.body.style.overflow = '';
+        }
+
+        // ================================================================
+        // 19. ЗАКРЫТИЕ МОДАЛОК ПО ESC
+        // ================================================================
         document.addEventListener('keydown', function(e) {
             if (e.key === 'Escape') {
                 closeMap();
+                closeGroupList();
+                closeExams();
             }
         });
 
         // ================================================================
-        // 9. АВТОРАСШИРЕНИЕ ЗАМЕТОК
+        // 20. АВТОРАСШИРЕНИЕ ЗАМЕТОК
         // ================================================================
         document.addEventListener('input', function(e) {
             if (e.target.classList.contains('note-input')) {
@@ -1084,20 +2151,20 @@
         });
 
         // ================================================================
-        // 10. ЗАПУСК
+        // 21. ЗАПУСК
         // ================================================================
         document.addEventListener('DOMContentLoaded', function() {
             const btn = document.querySelector(`.week-switch button[data-week="${realWeek}"]`);
             if (btn) btn.classList.add('active');
             
             render();
-            updateTimer();
+            updateTimerAndHighlight();
             
-            setInterval(updateTimer, 1000);
+            setInterval(updateTimerAndHighlight, 1000);
         });
 
         console.log('✅ Страница загружена');
-        console.log(` Реальная неделя: ${realWeek}, реальный день: ${dayNames[realDayIndex]}`);
+        console.log(`📅 Реальная неделя: ${realWeek}, реальный день: ${dayNames[realDayIndex]}`);
     </script>
 
 </body>
