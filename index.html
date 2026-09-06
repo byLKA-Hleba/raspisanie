@@ -1661,13 +1661,13 @@
                     const nextStartSeconds = nextH * 3600 + nextM * 60;
                     const wait = nextStartSeconds - nowSeconds;
 
-                    if (wait > 0 && wait <= 43200) {
+                    if (wait > 0 && wait <= 86400) {
                         const wt = formatTime(wait);
                         timerSubRow.style.display = 'flex';
                         timerSubLabel.textContent = 'До начала следующей пары:';
                         timerSubDisplay.textContent = `${String(wt.hours).padStart(2, '0')}:${String(wt.mins).padStart(2, '0')}:${String(wt.secs).padStart(2, '0')}`;
                         timerSubDisplay.className = 'timer-sub-display waiting';
-                    } else if (wait > 43200) {
+                    } else if (wait > 86400) {
                         timerSubRow.style.display = 'none';
                     } else {
                         timerSubRow.style.display = 'none';
@@ -1684,7 +1684,7 @@
                 const nextStartSeconds = nextH * 3600 + nextM * 60;
                 const wait = nextStartSeconds - nowSeconds;
 
-                if (wait > 0 && wait <= 43200) {
+                if (wait > 0 && wait <= 86400) {
                     const wt = formatTime(wait);
                     timerDisplay.textContent = `${String(wt.hours).padStart(2, '0')}:${String(wt.mins).padStart(2, '0')}:${String(wt.secs).padStart(2, '0')}`;
                     timerDisplay.className = 'timer-display waiting';
@@ -1694,7 +1694,7 @@
                     if (isTodayView) {
                         highlightPairsByTime(nextTime, 'next');
                     }
-                } else if (wait > 43200) {
+                } else if (wait > 86400) {
                     timerDisplay.textContent = '⏳';
                     timerDisplay.className = 'timer-display done';
                     timerLabel.textContent = 'Следующая пара позже 12 часов';
