@@ -194,6 +194,19 @@
             background: #3d3d5a;
             border-color: #6c5ce7;
         }
+        body.dark .subject-list-item .subject-name {
+            color: #ffffff;
+        }
+        body.dark .subject-list-item .subject-arrow {
+            color: #b0b0c0;
+        }
+        body.dark .material-item .material-name {
+            color: #ffffff;
+        }
+        body.dark .materials-subject-title {
+            color: #ffffff;
+            border-bottom-color: #4d4d6a;
+        }
 
         /* ===== ШАПКА ===== */
         .header {
@@ -866,13 +879,16 @@
             color: #b0a0e0;
         }
 
-        /* ===== КНОПКИ ДЕЙСТВИЙ (фиолетовые, со стикерами) ===== */
+        /* ===== КНОПКИ ДЕЙСТВИЙ (два ряда) ===== */
         .actions-row {
             display: flex;
+            flex-direction: column;
             gap: 8px;
             margin: 16px 0 8px;
-            flex-wrap: wrap;
-            justify-content: flex-start;
+        }
+        .actions-row .actions-group {
+            display: flex;
+            gap: 8px;
         }
         .action-button {
             flex: 1;
@@ -905,53 +921,15 @@
         .action-button .icon {
             font-size: 1rem;
         }
-        /* ===== ИСПРАВЛЕНИЯ ДЛЯ ТЁМНОЙ ТЕМЫ (МАТЕРИАЛЫ) ===== */
-        body.dark .subject-list-item .subject-name {
-            color: #ffffff;
-        }
-        body.dark .subject-list-item .subject-arrow {
-            color: #b0b0c0;
-        }
-        body.dark .material-item .material-name {
-            color: #ffffff;
-        }
-        body.dark .materials-subject-title {
-            color: #ffffff;
-            border-bottom-color: #4d4d6a;
-        }
-        body.dark .materials-back-btn {
-            background: #3d3d5a;
-            color: #e0e0e0;
-        }
-        body.dark .materials-back-btn:hover {
-            background: #4d4d6a;
-        }
-        body.dark .subject-list-item {
-            background: #2d2d44;
-            border-color: #3d3d5a;
-            color: #e0e0e0;
-        }
-        body.dark .subject-list-item:hover {
-            background: #3d3d5a;
-            border-color: #6c5ce7;
-        }
-        body.dark .material-item {
-            background: #2d2d44;
-            border-color: #3d3d5a;
-        }
-        body.dark .material-item:hover {
-            background: #3d3d5a;
-        }
-        body.dark .material-item .material-type {
-            background: #3d3d5a;
-            color: #b0b0c0;
-        }
         @media (max-width: 400px) {
             .action-button {
                 font-size: 0.7rem;
                 padding: 8px 4px;
-                white-space: normal;
-                word-break: break-word;
+                white-space: nowrap;
+                gap: 4px;
+            }
+            .action-button .icon {
+                font-size: 0.85rem;
             }
         }
 
@@ -1283,7 +1261,8 @@
             .subgroup-wrapper { flex-direction: column; gap: 8px; }
             .subgroup-col { flex: none; }
             .timer-sub-row { flex-direction: column; align-items: flex-start; gap: 4px; }
-            .action-button { font-size: 0.7rem; padding: 8px 4px; white-space: normal; word-break: break-word; }
+            .action-button { font-size: 0.65rem; padding: 6px 4px; gap: 3px; }
+            .action-button .icon { font-size: 0.8rem; }
             .modal-window { max-width: 100%; }
             .modal-body table { font-size: 0.7rem; }
             .modal-body table th, .modal-body table td { padding: 4px 4px; }
@@ -1351,20 +1330,24 @@
     <!-- ===== КОНТЕЙНЕР ПАР ===== -->
     <div id="pairsContainer"></div>
 
-    <!-- ===== КНОПКИ ДЕЙСТВИЙ ===== -->
+    <!-- ===== КНОПКИ ДЕЙСТВИЙ (два ряда) ===== -->
     <div class="actions-row">
-        <button class="action-button" onclick="openMap()">
-            <span class="icon">🗺️</span> Карта
-        </button>
-        <button class="action-button" onclick="openGroupList()">
-            <span class="icon">📋</span> Список
-        </button>
-        <button class="action-button" onclick="openExams()">
-            <span class="icon">📝</span> Экзамены
-        </button>
-        <button class="action-button" onclick="openMaterials()">
-            <span class="icon">📚</span> Материалы
-        </button>
+        <div class="actions-group">
+            <button class="action-button" onclick="openMap()">
+                <span class="icon">🗺️</span> Карта
+            </button>
+            <button class="action-button" onclick="openGroupList()">
+                <span class="icon">📋</span> Список
+            </button>
+        </div>
+        <div class="actions-group">
+            <button class="action-button" onclick="openExams()">
+                <span class="icon">📝</span> Экзамены
+            </button>
+            <button class="action-button" onclick="openMaterials()">
+                <span class="icon">📚</span> Материалы
+            </button>
+        </div>
     </div>
 
     <!-- ===== ВОДЯНОЙ ЗНАК (с пасхалкой) ===== -->
@@ -1546,55 +1529,47 @@
             {
                 subject: 'Математика',
                 items: [
-                    { name: '', type: '' },
-                    { name: '', type: '' },
-                    { name: '', type: '' },
-                    { name: '', type: '' },
+                    { name: 'Лекция 1. Введение в анализ', type: 'Лекция' },
+                    { name: 'Практика 1. Пределы', type: 'Практика' },
+                    { name: 'Конспект по производным', type: 'Конспект' },
+                    { name: 'Домашнее задание №1', type: 'ДЗ' },
                 ]
             },
             {
                 subject: 'Физика',
                 items: [
-                    { name: '', type: '' },
-                    { name: '', type: '' },
-                    { name: '', type: '' },
-                    { name: '', type: '' },
+                    { name: 'Лекция 1. Механика', type: 'Лекция' },
+                    { name: 'Лабораторная работа №1', type: 'Лабораторная' },
+                    { name: 'Формулы по термодинамике', type: 'Шпаргалка' },
                 ]
             },
             {
                 subject: 'Информатика',
                 items: [
-                    { name: '', type: '' },
-                    { name: '', type: '' },
-                    { name: '', type: '' },
-                    { name: '', type: '' },
+                    { name: 'Лекция 1. Основы алгоритмов', type: 'Лекция' },
+                    { name: 'Практика 1. Python', type: 'Практика' },
+                    { name: 'Проект. Сайт-расписание', type: 'Проект' },
                 ]
             },
             {
                 subject: 'Химия',
                 items: [
-                    { name: '', type: '' },
-                    { name: '', type: '' },
-                    { name: '', type: '' },
-                    { name: '', type: '' },
+                    { name: 'Лекция 1. Общая химия', type: 'Лекция' },
+                    { name: 'Таблица Менделеева', type: 'Справочник' },
                 ]
             },
             {
                 subject: 'Инженерная графика',
                 items: [
-                    { name: '', type: '' },
-                    { name: '', type: '' },
-                    { name: '', type: '' },
-                    { name: '', type: '' },
+                    { name: 'Лекция 1. Черчение', type: 'Лекция' },
+                    { name: 'Примеры чертежей', type: 'Примеры' },
                 ]
             },
             {
                 subject: 'Английский язык',
                 items: [
-                    { name: '', type: '' },
-                    { name: '', type: '' },
-                    { name: '', type: '' },
-                    { name: '', type: '' },
+                    { name: 'Слова по теме "Техника"', type: 'Словарь' },
+                    { name: 'Грамматика. Времена', type: 'Конспект' },
                 ]
             }
         ];
