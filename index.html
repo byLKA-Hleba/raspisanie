@@ -4,7 +4,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Расписание</title>
-    <!-- Подключение Leaflet -->
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
     <style>
@@ -334,18 +333,10 @@
             text-align: right;
             letter-spacing: 2px;
         }
-        .timer-container .timer-display.ongoing {
-            color: #00b894;
-        }
-        .timer-container .timer-display.waiting {
-            color: #fdcb6e;
-        }
-        .timer-container .timer-display.done {
-            color: #b2bec3;
-        }
-        .timer-container .timer-display.weekend {
-            color: #6c5ce7;
-        }
+        .timer-container .timer-display.ongoing { color: #00b894; }
+        .timer-container .timer-display.waiting { color: #fdcb6e; }
+        .timer-container .timer-display.done { color: #b2bec3; }
+        .timer-container .timer-display.weekend { color: #6c5ce7; }
         .timer-sub-row {
             display: flex;
             justify-content: space-between;
@@ -368,15 +359,9 @@
             letter-spacing: 1px;
             font-size: 1.2rem;
         }
-        .timer-sub-row .timer-sub-display.ongoing {
-            color: #00b894;
-        }
-        .timer-sub-row .timer-sub-display.waiting {
-            color: #fdcb6e;
-        }
-        .timer-sub-row .timer-sub-display.done {
-            color: #b2bec3;
-        }
+        .timer-sub-row .timer-sub-display.ongoing { color: #00b894; }
+        .timer-sub-row .timer-sub-display.waiting { color: #fdcb6e; }
+        .timer-sub-row .timer-sub-display.done { color: #b2bec3; }
 
         /* ===== ПЕРЕКЛЮЧЕНИЕ НЕДЕЛЬ ===== */
         .week-switch {
@@ -1003,7 +988,7 @@
             color: #e0e0e0;
         }
 
-        /* ===== УЧЕБНЫЕ МАТЕРИАЛЫ (стили) ===== */
+        /* ===== УЧЕБНЫЕ МАТЕРИАЛЫ ===== */
         .materials-grid {
             display: flex;
             flex-direction: column;
@@ -1082,15 +1067,12 @@
             border-radius: 30px;
             color: #636e72;
             font-weight: 600;
+            white-space: nowrap;
+            margin-left: 8px;
         }
         body.dark .material-item .material-type {
             background: #3d3d5a;
             color: #b0b0c0;
-        }
-        .material-item .material-placeholder {
-            font-size: 0.7rem;
-            color: #b2bec3;
-            font-style: italic;
         }
         .materials-subject-title {
             font-size: 1.2rem;
@@ -1110,7 +1092,108 @@
             color: #b2bec3;
         }
 
-        /* ===== ВОДЯНОЙ ЗНАК (с пасхалкой) ===== */
+        /* ===== КЛИКАБЕЛЬНОЕ НАЗВАНИЕ МАТЕРИАЛА ===== */
+        .material-name.clickable {
+            cursor: pointer;
+            transition: 0.2s;
+            border-bottom: 1px dashed transparent;
+        }
+        .material-name.clickable:hover {
+            color: #6c5ce7;
+            border-bottom-color: #6c5ce7;
+        }
+        body.dark .material-name.clickable:hover {
+            color: #b0a0e0;
+            border-bottom-color: #b0a0e0;
+        }
+
+        .volume-count {
+            font-size: 0.7rem;
+            color: #6c5ce7;
+            font-weight: 600;
+            margin-left: 4px;
+            white-space: nowrap;
+        }
+        body.dark .volume-count {
+            color: #b0a0e0;
+        }
+
+        /* ===== МНОГОТОМНИКИ ===== */
+        .material-with-volumes {
+            margin-bottom: 6px;
+        }
+        .material-item.has-volumes {
+            margin-bottom: 0;
+            border-bottom-left-radius: 0;
+            border-bottom-right-radius: 0;
+            cursor: pointer;
+            user-select: none;
+        }
+        .material-item.has-volumes:hover {
+            background: #f8f7ff;
+        }
+        body.dark .material-item.has-volumes:hover {
+            background: #3d3d5a;
+        }
+        .toggle-arrow {
+            transition: 0.2s;
+        }
+        .volumes-container {
+            border: 1px solid #dfe6e9;
+            border-top: none;
+            border-bottom-left-radius: 10px;
+            border-bottom-right-radius: 10px;
+            overflow: hidden;
+            background: #f8f9fa;
+            animation: volumesFadeIn 0.2s ease;
+        }
+        @keyframes volumesFadeIn {
+            from { opacity: 0; transform: translateY(-4px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        body.dark .volumes-container {
+            background: #242436;
+            border-color: #3d3d5a;
+        }
+        .volume-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 16px;
+            cursor: pointer;
+            transition: 0.2s;
+            border-bottom: 1px solid #e9ecef;
+            color: #2d3436;
+        }
+        body.dark .volume-item {
+            border-bottom-color: #3d3d5a;
+            color: #e0e0e0;
+        }
+        .volume-item:last-child {
+            border-bottom: none;
+        }
+        .volume-item:hover {
+            background: #f0edff;
+        }
+        body.dark .volume-item:hover {
+            background: #3d3d5a;
+        }
+        .volume-label {
+            font-size: 0.8rem;
+            font-weight: 500;
+        }
+        .volume-open {
+            font-size: 0.7rem;
+            color: #6c5ce7;
+            font-weight: 600;
+            white-space: nowrap;
+            margin-left: 8px;
+        }
+        body.dark .volume-open {
+            color: #b0a0e0;
+        }
+
+        /* ===== ВОДЯНОЙ ЗНАК ===== */
         .watermark {
             margin-top: 40px;
             padding: 20px 0 10px;
@@ -1273,10 +1356,8 @@
     </style>
 </head>
 <body>
-    <!-- ===== СКРЫТЫЙ АУДИО ДЛЯ ПАСХАЛКИ ===== -->
     <audio id="easterEggSound" src="easteregg.mp3" preload="auto"></audio>
 
-    <!-- ===== ШАПКА ===== -->
     <div class="header">
         <span class="group">STANKI52</span>
         <div class="header-search">
@@ -1289,13 +1370,11 @@
         </div>
     </div>
 
-    <!-- ===== ПЕРЕКЛЮЧАТЕЛЬ НЕДЕЛЬ ===== -->
     <div class="week-switch">
         <button data-week="1" onclick="setWeek(1)">1 неделя</button>
         <button data-week="2" onclick="setWeek(2)">2 неделя</button>
     </div>
 
-    <!-- ===== ТАЙМЕР ===== -->
     <div class="timer-container" id="timerContainer">
         <div class="timer-main">
             <div class="timer-label" id="timerLabel">⏳ Загрузка...</div>
@@ -1307,10 +1386,8 @@
         </div>
     </div>
 
-    <!-- ===== НАВИГАЦИЯ ПО ДНЯМ ===== -->
     <div class="day-nav" id="dayNav"></div>
 
-    <!-- ===== СТРЕЛКИ ПОД РАСПИСАНИЕМ ===== -->
     <div class="day-nav-wrapper">
         <button class="day-nav-arrow" onclick="changeDay(-1)">
             ◀ <span class="arrow-label">Назад</span>
@@ -1321,16 +1398,13 @@
         </button>
     </div>
 
-    <!-- ===== ЗАГОЛОВОК ДНЯ ===== -->
     <div class="day-title">
         <h2 id="dayTitle">Понедельник</h2>
         <span class="pair-count" id="pairCount">4 пары</span>
     </div>
 
-    <!-- ===== КОНТЕЙНЕР ПАР ===== -->
     <div id="pairsContainer"></div>
 
-    <!-- ===== КНОПКИ ДЕЙСТВИЙ (два ряда) ===== -->
     <div class="actions-row">
         <div class="actions-group">
             <button class="action-button" onclick="openMap()">
@@ -1350,14 +1424,12 @@
         </div>
     </div>
 
-    <!-- ===== ВОДЯНОЙ ЗНАК (с пасхалкой) ===== -->
     <div class="watermark" id="watermark">
         <span class="watermark-icon">🎬</span>
         Directed by
         <span class="watermark-nick">| byLKA-Xleba</span>
     </div>
 
-    <!-- ===== МОДАЛЬНОЕ ОКНО: КАРТА ===== -->
     <div class="map-overlay" id="mapOverlay" onclick="closeMap()">
         <div class="map-modal" onclick="event.stopPropagation()">
             <div class="map-header">
@@ -1370,7 +1442,6 @@
         </div>
     </div>
 
-    <!-- ===== МОДАЛЬНОЕ ОКНО: СПИСОК ГРУППЫ ===== -->
     <div class="modal-overlay" id="groupListOverlay" onclick="closeGroupList(event)">
         <div class="modal-window" onclick="event.stopPropagation()">
             <div class="modal-header">
@@ -1387,15 +1458,12 @@
                             <th>Примечание</th>
                         </tr>
                     </thead>
-                    <tbody id="groupListBody">
-                        <!-- Заполняется JS -->
-                    </tbody>
+                    <tbody id="groupListBody"></tbody>
                 </table>
             </div>
         </div>
     </div>
 
-    <!-- ===== МОДАЛЬНОЕ ОКНО: ЭКЗАМЕНЫ ===== -->
     <div class="modal-overlay" id="examsOverlay" onclick="closeExams(event)">
         <div class="modal-window" onclick="event.stopPropagation()">
             <div class="modal-header">
@@ -1412,24 +1480,19 @@
                             <th>Примечание</th>
                         </tr>
                     </thead>
-                    <tbody id="examsBody">
-                        <!-- Заполняется JS -->
-                    </tbody>
+                    <tbody id="examsBody"></tbody>
                 </table>
             </div>
         </div>
     </div>
 
-    <!-- ===== МОДАЛЬНОЕ ОКНО: УЧЕБНЫЕ МАТЕРИАЛЫ ===== -->
     <div class="modal-overlay" id="materialsOverlay" onclick="closeMaterials(event)">
         <div class="modal-window" onclick="event.stopPropagation()">
             <div class="modal-header">
                 <span id="materialsTitle">📚 Учебные материалы</span>
                 <button class="modal-close" onclick="closeMaterials()">✕</button>
             </div>
-            <div class="modal-body" id="materialsBody">
-                <!-- Заполняется JS -->
-            </div>
+            <div class="modal-body" id="materialsBody"></div>
         </div>
     </div>
 
@@ -1437,7 +1500,6 @@
         // ================================================================
         // 1. ДАННЫЕ РАСПИСАНИЯ
         // ================================================================
-
         const schedule = {
             1: {
                 'Понедельник': [
@@ -1454,7 +1516,7 @@
                     { time: '19:30 – 21:05', name: 'ОИЗ. Инженерная графика', type: 'Лекция', teacher: 'Джежора С.В.', room: 'а.4п к.8' },
                 ],
                 'Среда': [
-                    { time: '9:55 – 11:30', name: 'Химия', type: 'Лабораторная', teacher: 'Стрелкова Е.В.', room: 'лаб.512 к.11', subgroup: '2-я подгруппа' },
+                    { time: '09:55 – 11:30', name: 'Химия', type: 'Лабораторная', teacher: 'Стрелкова Е.В.', room: 'лаб.512 к.11', subgroup: '2-я подгруппа' },
                     { time: '12:00 – 13:35', name: '???????Профессиональное обучение по профессиям рабочих?????????', type: 'Лабораторная', teacher: '?', room: 'Мастерская к.7' },
                     { time: '12:00 – 13:35', name: 'Химия', type: 'Практика', teacher: 'Стрелкова Е.В.', room: 'а.508а к.11' },
                     { time: '15:40 – 17:15', name: 'Химия', type: 'Лекция', teacher: 'Стрелкова Е.В.', room: 'а.2п к.17' },
@@ -1496,7 +1558,7 @@
                     { time: '19:30 – 21:05', name: 'ОИЗ. Математика', type: 'Лекция', teacher: 'Крушевский Е.А.', room: 'а.2п к.17' },
                 ],
                 'Среда': [
-                    { time: '9:55 – 11:30', name: 'Химия', type: 'Лабораторная', teacher: 'Стрелкова Е.В.', room: 'лаб.512 к.11', subgroup: '1-я подгруппа' },
+                    { time: '09:55– 11:30', name: 'Химия', type: 'Лабораторная', teacher: 'Стрелкова Е.В.', room: 'лаб.512 к.11', subgroup: '1-я подгруппа' },
                     { time: '13:55 – 15:30', name: 'Инженерная графика', type: 'Практика', teacher: 'Джежора С.В.', room: 'а.520 к.8' },
                     { time: '15:40 – 17:15', name: 'Химия', type: 'Лекция', teacher: 'Стрелкова Е.В.', room: 'а.2п к.17' },
                     { time: '17:45 – 19:20', name: 'Физика', type: 'Лекция', teacher: 'Бобученко Д.С.', room: 'а.2п к.17' },
@@ -1524,9 +1586,13 @@
         };
 
         // ================================================================
-        // 2. ДАННЫЕ ДЛЯ УЧЕБНЫХ МАТЕРИАЛОВ
+        // 2. УЧЕБНЫЕ МАТЕРИАЛЫ
         // ================================================================
-
+        // Поля:
+        //   name   — название материала
+        //   type   — бейдж (Учебник / Методичка / Презентация / ...)
+        //   link   — путь к файлу или внешняя ссылка (опционально)
+        //   volumes — массив { label, link } для многотомников (опционально)
         const materialsData = [
             {
                 subject: 'Математика',
@@ -1537,52 +1603,63 @@
             {
                 subject: 'Физика',
                 items: [
-                    { name: 'График выполения лаб', type: 'Вспомогательные материалы' },
-                    { name: 'Яндекс диск с лаб. работами', type: 'Вспомогательные материалы' },
-                    { name: 'Изучение погрешностей измерений', type: ' Методичка' },
-                    { name: 'Трофимова Т.И. "Курис физики"', type: '' },
-                    { name: 'Совельев И.В. "Курс общей физики Т1"', type: 'Учебник' },
-                    { name: 'Совельев И.В. "Курс общей физики Т2"', type: 'Учебник' },
-                    { name: 'Сивухин Д.В. "Курс физики Т1"', type: 'Учебник' },
-                    { name: 'Сивухин Д.В. "Курс физики Т2"', type: 'Учебник' },
-                    { name: 'Фейнмановские лекции по химии', type: 'Учебник' },
-                    { name: 'Павел ВИКТОР', type: 'Ютуб канал' },
+                    { name: 'График выполнения лаб', type: 'Вспомогательные', link: '' },
+                    { name: 'Яндекс диск с лаб. работами', type: 'Вспомогательные', link: '' },
+                    { name: 'Изучение погрешностей измерений', type: 'Методичка', link: '' },
+                    { name: 'Трофимова Т.И. "Курс физики"', type: 'Учебник', link: '' },
+                    {
+                        name: 'Савельев И.В. "Курс общей физики"',
+                        type: 'Учебник',
+                        volumes: [
+                            { label: 'Том 1. Механика. Молекулярная физика', link: '' },
+                            { label: 'Том 2. Электричество и магнетизм. Волны. Оптика', link: '' }
+                        ]
+                    },
+                    {
+                        name: 'Сивухин Д.В. "Курс физики"',
+                        type: 'Учебник',
+                        volumes: [
+                            { label: 'Том 1. Механика', link: '' },
+                            { label: 'Том 2. Термодинамика и молекулярная физика', link: '' }
+                        ]
+                    },
+                    { name: 'Фейнмановские лекции по физике', type: 'Учебник', link: '' },
+                    { name: 'Павел ВИКТОР', type: 'Ютуб канал', link: '' },
                 ]
             },
             {
                 subject: 'Химия',
                 items: [
-                    { name: 'Номера ИДЗ', type: 'Вспомогательные материалы' },
-                    { name: 'Задания ИДЗ. Гл1-4', type: 'Вспомогательные материалы' },
-                    { name: 'Гл1. Основные классы неорганических соединений', type: 'Презентация' },
+                    { name: 'Номера ИДЗ', type: 'Вспомогательные', link: '' },
+                    { name: 'Задания ИДЗ. Гл1-4', type: 'Вспомогательные', link: '' },
+                    { name: 'Гл1. Основные классы неорганических соединений', type: 'Презентация', link: '' },
                 ]
             },
             {
                 subject: 'Инженерная графика',
                 items: [
                     { name: '', type: '' },
-                    { name: '', type: '' },
                 ]
             },
             {
-                subject: 'Технология конструкционыых материалов',
+                subject: 'Технология конструкционных материалов',
                 items: [
-                    { name: 'Комаров О.С. "Технология конструкционыых материалов"', type: 'Учебник' },
-                    { name: 'Дальский А.М. "Технология конструкционыых материалов"', type: 'Учебник' },
-                    { name: 'Кузьмин Б.А. "Технология металлов и конструкционыых материалов"', type: 'Учебник' },
-                    { name: 'Солнцев В.П. "Металловедение и технология металлов"', type: 'Учебник' },
+                    { name: 'Комаров О.С. "Технология конструкционных материалов"', type: 'Учебник', link: '' },
+                    { name: 'Дальский А.М. "Технология конструкционных материалов"', type: 'Учебник', link: '' },
+                    { name: 'Кузьмин Б.А. "Технология металлов и конструкционных материалов"', type: 'Учебник', link: '' },
+                    { name: 'Солнцев В.П. "Металловедение и технология металлов"', type: 'Учебник', link: '' },
                 ]
             },
             {
                 subject: 'Английский язык',
                 items: [
-                    { name: 'Методическое пособие по обучению устной речи для студентов технических вузов', type: 'Учебник' },
+                    { name: 'Методическое пособие по обучению устной речи для студентов технических вузов', type: 'Учебник', link: 'Metodicheskoe_posobie_po_obucheniyu.pdf' },
                 ]
             }
         ];
 
         // ================================================================
-        // 3. ДАННЫЕ ДЛЯ СПИСКА ГРУППЫ
+        // 3. СПИСОК ГРУППЫ
         // ================================================================
         const groupMembers = [
             { name: 'Бамбизов Эрик Сергеевич', subgroup: '1-я', note: '' },
@@ -1609,7 +1686,7 @@
         ];
 
         // ================================================================
-        // 4. ДАННЫЕ ДЛЯ ЭКЗАМЕНОВ
+        // 4. ЭКЗАМЕНЫ
         // ================================================================
         const examsData = [
             { subject: 'Математика', status: 'Диф. зачёт', date: '-', note: '' },
@@ -1680,8 +1757,6 @@
         let currentDayIndex = realDayIndex;
         let isDarkTheme = false;
 
-        console.log(`📅 Реальная неделя: ${realWeek}, реальный день: ${dayNames[realDayIndex]}`);
-
         // ================================================================
         // 7. ТЕМНАЯ ТЕМА
         // ================================================================
@@ -1727,13 +1802,13 @@
                         const [start] = firstPair.time.split(' – ');
                         const [startH, startM] = start.split(':').map(Number);
 
-                        const now = new Date();
-                        const monday = new Date(now);
-                        const daysUntilMonday = (1 + 7 - now.getDay()) % 7 || 7;
-                        monday.setDate(now.getDate() + daysUntilMonday);
+                        const now2 = new Date();
+                        const monday = new Date(now2);
+                        const daysUntilMonday = (1 + 7 - now2.getDay()) % 7 || 7;
+                        monday.setDate(now2.getDate() + daysUntilMonday);
                         monday.setHours(startH, startM, 0, 0);
 
-                        const diffSeconds = Math.floor((monday - now) / 1000);
+                        const diffSeconds = Math.floor((monday - now2) / 1000);
 
                         if (diffSeconds > 0 && diffSeconds <= 86400) {
                             const hours = Math.floor(diffSeconds / 3600);
@@ -1774,9 +1849,7 @@
 
             const groupedByTime = {};
             pairs.forEach(pair => {
-                if (!groupedByTime[pair.time]) {
-                    groupedByTime[pair.time] = [];
-                }
+                if (!groupedByTime[pair.time]) groupedByTime[pair.time] = [];
                 groupedByTime[pair.time].push(pair);
             });
 
@@ -1849,9 +1922,7 @@
                 timerDisplay.className = 'timer-display ongoing';
                 timerLabel.textContent = `До конца пары:`;
 
-                if (isTodayView) {
-                    highlightPairsByTime(currentTime, 'current');
-                }
+                if (isTodayView) highlightPairsByTime(currentTime, 'current');
 
                 if (nextSlot) {
                     const [nextStart] = nextTime.split(' – ');
@@ -1865,8 +1936,6 @@
                         timerSubLabel.textContent = 'До начала следующей пары:';
                         timerSubDisplay.textContent = `${String(wt.hours).padStart(2, '0')}:${String(wt.mins).padStart(2, '0')}:${String(wt.secs).padStart(2, '0')}`;
                         timerSubDisplay.className = 'timer-sub-display waiting';
-                    } else if (wait > 86400) {
-                        timerSubRow.style.display = 'none';
                     } else {
                         timerSubRow.style.display = 'none';
                     }
@@ -1889,9 +1958,7 @@
                     timerLabel.textContent = 'До начала следующей пары:';
                     timerSubRow.style.display = 'none';
 
-                    if (isTodayView) {
-                        highlightPairsByTime(nextTime, 'next');
-                    }
+                    if (isTodayView) highlightPairsByTime(nextTime, 'next');
                 } else if (wait > 86400) {
                     timerDisplay.textContent = '⏳';
                     timerDisplay.className = 'timer-display done';
@@ -1926,7 +1993,7 @@
         }
 
         // ================================================================
-        // 10. ЗАМЕТКИ (localStorage)
+        // 10. ЗАМЕТКИ
         // ================================================================
         function getPairId(pair, dayName, weekNum) {
             return `${weekNum}_${dayName}_${pair.time}_${pair.name}`.replace(/\s/g, '_');
@@ -2098,13 +2165,6 @@
             render();
         }
 
-        function updateVisibleCount() {
-            if (searchQuery !== '') return;
-            const countEl = document.getElementById('pairCount');
-            const total = getUniqueTimeSlots().length;
-            countEl.textContent = total + ' пары';
-        }
-
         function getUniqueTimeSlots() {
             const weekData = schedule[currentWeek];
             if (!weekData) return [];
@@ -2120,10 +2180,7 @@
         // ================================================================
         function render() {
             const weekData = schedule[currentWeek];
-            if (!weekData) {
-                console.error('Нет данных для недели', currentWeek);
-                return;
-            }
+            if (!weekData) return;
 
             const dayName = dayNames[currentDayIndex];
             const pairs = weekData[dayName] || [];
@@ -2134,12 +2191,8 @@
             document.querySelectorAll('.week-switch button').forEach(b => {
                 b.classList.remove('real-week', 'selected-week');
                 const weekNum = parseInt(b.dataset.week);
-                if (weekNum === realWeek) {
-                    b.classList.add('real-week');
-                }
-                if (weekNum === currentWeek) {
-                    b.classList.add('selected-week');
-                }
+                if (weekNum === realWeek) b.classList.add('real-week');
+                if (weekNum === currentWeek) b.classList.add('selected-week');
             });
 
             const nav = document.getElementById('dayNav');
@@ -2199,9 +2252,7 @@
 
             const groupedByTime = {};
             pairs.forEach(pair => {
-                if (!groupedByTime[pair.time]) {
-                    groupedByTime[pair.time] = [];
-                }
+                if (!groupedByTime[pair.time]) groupedByTime[pair.time] = [];
                 groupedByTime[pair.time].push(pair);
             });
 
@@ -2252,9 +2303,7 @@
                                                 >${loadNote(getPairId(pair1, dayName, currentWeek))}</textarea>
                                                 <span class="note-saved" id="note_saved_${getPairId(pair1, dayName, currentWeek)}">✅ Сохранено</span>
                                             </div>
-                                        ` : `
-                                            <div class="subgroup-empty">— нет пары</div>
-                                        `}
+                                        ` : `<div class="subgroup-empty">— нет пары</div>`}
                                     </div>
                                 </div>
                                 <div class="subgroup-col">
@@ -2272,9 +2321,7 @@
                                                 >${loadNote(getPairId(pair2, dayName, currentWeek))}</textarea>
                                                 <span class="note-saved" id="note_saved_${getPairId(pair2, dayName, currentWeek)}">✅ Сохранено</span>
                                             </div>
-                                        ` : `
-                                            <div class="subgroup-empty">— нет пары</div>
-                                        `}
+                                        ` : `<div class="subgroup-empty">— нет пары</div>`}
                                     </div>
                                 </div>
                             </div>
@@ -2289,9 +2336,7 @@
                 }
             });
 
-            if (searchQuery !== '') {
-                searchSchedule(searchQuery);
-            }
+            if (searchQuery !== '') searchSchedule(searchQuery);
 
             setTimeout(updateTimerAndHighlight, 50);
         }
@@ -2304,16 +2349,8 @@
 
         function renderTeacherNames(teacherStr) {
             if (!teacherStr || teacherStr === '?') return teacherStr || '?';
-
             const names = teacherStr.split(',').map(s => s.trim()).filter(s => s.length > 0);
-
             if (names.length === 0) return teacherStr;
-
-            if (names.length === 1) {
-                const short = names[0];
-                const full = expandTeacherName(short);
-                return `<span class="teacher-name" data-short="${short.replace(/'/g, "\\'")}" data-full="${full.replace(/'/g, "\\'")}" onclick="toggleTeacherName(this)">${short}</span>`;
-            }
 
             return names.map(name => {
                 const short = name.trim();
@@ -2360,11 +2397,8 @@
             const short = element.dataset.short;
             const full = element.dataset.full;
             const current = element.textContent.trim();
-            if (current === short) {
-                element.textContent = full;
-            } else {
-                element.textContent = short;
-            }
+            if (current === short) element.textContent = full;
+            else element.textContent = short;
         }
 
         // ================================================================
@@ -2373,12 +2407,10 @@
         let watermarkClickCount = 0;
         let watermarkTimer = null;
 
-        document.getElementById('watermark').addEventListener('click', function(e) {
+        document.getElementById('watermark').addEventListener('click', function() {
             watermarkClickCount++;
             clearTimeout(watermarkTimer);
-            watermarkTimer = setTimeout(() => {
-                watermarkClickCount = 0;
-            }, 500);
+            watermarkTimer = setTimeout(() => { watermarkClickCount = 0; }, 500);
 
             if (watermarkClickCount === 3) {
                 watermarkClickCount = 0;
@@ -2389,13 +2421,10 @@
         function playEasterEggSound() {
             const audio = document.getElementById('easterEggSound');
             if (!audio) return;
-
             audio.currentTime = 0;
             audio.volume = 1.0;
             audio.loop = false;
-            audio.play().catch(e => {
-                console.log('⚠️ Звук не воспроизведён:', e);
-            });
+            audio.play().catch(e => console.log('⚠️ Звук не воспроизведён:', e));
         }
 
         // ================================================================
@@ -2410,9 +2439,7 @@
 
         function setWeek(week) {
             currentWeek = week;
-            document.querySelectorAll('.week-switch button').forEach(b => {
-                b.classList.remove('active');
-            });
+            document.querySelectorAll('.week-switch button').forEach(b => b.classList.remove('active'));
             const btn = document.querySelector(`.week-switch button[data-week="${week}"]`);
             if (btn) btn.classList.add('active');
             render();
@@ -2429,7 +2456,6 @@
 
         function updateUserLocation(position) {
             if (!campusMap) return;
-
             const userLat = position.coords.latitude;
             const userLng = position.coords.longitude;
             const southWest = L.latLng(53.918071, 27.588059);
@@ -2466,17 +2492,11 @@
         }
 
         function startGeolocationTracking() {
-            if (!navigator.geolocation) {
-                console.log('❌ Геолокация не поддерживается браузером');
-                return;
-            }
+            if (!navigator.geolocation) return;
             if (geolocationWatchId !== null) return;
-
             geolocationWatchId = navigator.geolocation.watchPosition(
                 updateUserLocation,
-                function(error) {
-                    console.log('❌ Геолокация недоступна:', error.message);
-                },
+                function(error) { console.log('❌ Геолокация недоступна:', error.message); },
                 { enableHighAccuracy: true, maximumAge: 5000, timeout: 10000 }
             );
         }
@@ -2516,16 +2536,10 @@
                 const icon = L.divIcon({
                     className: 'custom-marker',
                     html: `<div style="
-                        background: ${b.color};
-                        color: white;
-                        width: 28px;
-                        height: 28px;
-                        border-radius: 50%;
-                        display: flex;
-                        align-items: center;
-                        justify-content: center;
-                        font-size: 12px;
-                        font-weight: 700;
+                        background: ${b.color}; color: white;
+                        width: 28px; height: 28px; border-radius: 50%;
+                        display: flex; align-items: center; justify-content: center;
+                        font-size: 12px; font-weight: 700;
                         border: 2px solid white;
                         box-shadow: 0 2px 8px rgba(0,0,0,0.3);
                         cursor: pointer;
@@ -2630,39 +2644,27 @@
             const title = document.getElementById('materialsTitle');
             body.innerHTML = '';
 
-            if (currentMaterialSubject) {
-                const subjectData = materialsData.find(m => m.subject === currentMaterialSubject);
-                if (!subjectData) {
-                    currentMaterialSubject = null;
-                    renderMaterials();
-                    return;
-                }
-
-                title.textContent = `📚 ${currentMaterialSubject}`;
-
-                const backBtn = document.createElement('button');
-                backBtn.className = 'materials-back-btn';
-                backBtn.innerHTML = `<span class="back-icon">◀</span> Назад к предметам`;
-                backBtn.onclick = () => {
-                    currentMaterialSubject = null;
-                    renderMaterials();
-                };
-                body.appendChild(backBtn);
+            // ===== Список предметов =====
+            if (!currentMaterialSubject) {
+                title.textContent = '📚 Учебные материалы';
 
                 const container = document.createElement('div');
                 container.className = 'materials-grid';
 
-                if (subjectData.items.length === 0) {
-                    container.innerHTML = `<div class="materials-empty">📭 Материалов пока нет</div>`;
+                if (materialsData.length === 0) {
+                    container.innerHTML = `<div class="materials-empty">📭 Нет доступных предметов</div>`;
                 } else {
-                    subjectData.items.forEach(item => {
+                    materialsData.forEach(subject => {
                         const div = document.createElement('div');
-                        div.className = 'material-item';
+                        div.className = 'subject-list-item';
                         div.innerHTML = `
-                            <span class="material-name">${item.name}</span>
-                            <span class="material-type">${item.type || 'Материал'}</span>
+                            <span class="subject-name">${escapeHtml(subject.subject)}</span>
+                            <span class="subject-arrow">›</span>
                         `;
-                        div.style.cursor = 'default';
+                        div.onclick = () => {
+                            currentMaterialSubject = subject.subject;
+                            renderMaterials();
+                        };
                         container.appendChild(div);
                     });
                 }
@@ -2671,26 +2673,110 @@
                 return;
             }
 
-            title.textContent = '📚 Учебные материалы';
+            // ===== Материалы предмета =====
+            const subjectData = materialsData.find(m => m.subject === currentMaterialSubject);
+            if (!subjectData) {
+                currentMaterialSubject = null;
+                renderMaterials();
+                return;
+            }
+
+            title.textContent = `📚 ${currentMaterialSubject}`;
+
+            const backBtn = document.createElement('button');
+            backBtn.className = 'materials-back-btn';
+            backBtn.innerHTML = `<span class="back-icon">◀</span> Назад к предметам`;
+            backBtn.onclick = () => {
+                currentMaterialSubject = null;
+                renderMaterials();
+            };
+            body.appendChild(backBtn);
 
             const container = document.createElement('div');
             container.className = 'materials-grid';
 
-            if (materialsData.length === 0) {
-                container.innerHTML = `<div class="materials-empty">📭 Нет доступных предметов</div>`;
+            if (!subjectData.items || subjectData.items.length === 0) {
+                container.innerHTML = `<div class="materials-empty">📭 Материалов пока нет</div>`;
             } else {
-                materialsData.forEach(subject => {
-                    const div = document.createElement('div');
-                    div.className = 'subject-list-item';
-                    div.innerHTML = `
-                        <span class="subject-name">${subject.subject}</span>
-                        <span class="subject-arrow">›</span>
-                    `;
-                    div.onclick = () => {
-                        currentMaterialSubject = subject.subject;
-                        renderMaterials();
-                    };
-                    container.appendChild(div);
+                subjectData.items.forEach(item => {
+                    // ===== Многотомник =====
+                    if (item.volumes && item.volumes.length > 0) {
+                        const wrapper = document.createElement('div');
+                        wrapper.className = 'material-with-volumes';
+
+                        const header = document.createElement('div');
+                        header.className = 'material-item has-volumes';
+
+                        const nameSpan = document.createElement('span');
+                        nameSpan.className = 'material-name';
+                        nameSpan.innerHTML = `${escapeHtml(item.name)} <span class="volume-count">(${item.volumes.length} т.)</span>`;
+
+                        if (item.link) {
+                            nameSpan.classList.add('clickable');
+                            nameSpan.onclick = (e) => {
+                                e.stopPropagation();
+                                window.open(item.link, '_blank');
+                            };
+                        }
+
+                        const typeSpan = document.createElement('span');
+                        typeSpan.className = 'material-type toggle-arrow';
+                        typeSpan.textContent = (item.type || 'Материал') + ' ▾';
+
+                        header.appendChild(nameSpan);
+                        header.appendChild(typeSpan);
+
+                        const volumesContainer = document.createElement('div');
+                        volumesContainer.className = 'volumes-container';
+                        volumesContainer.style.display = 'none';
+
+                        item.volumes.forEach(vol => {
+                            const volDiv = document.createElement('div');
+                            volDiv.className = 'volume-item';
+                            volDiv.innerHTML = `
+                                <span class="volume-label">📖 ${escapeHtml(vol.label)}</span>
+                                <span class="volume-open">Открыть ›</span>
+                            `;
+                            volDiv.onclick = (e) => {
+                                e.stopPropagation();
+                                if (vol.link && vol.link !== '#') {
+                                    window.open(vol.link, '_blank');
+                                }
+                            };
+                            volumesContainer.appendChild(volDiv);
+                        });
+
+                        header.onclick = () => {
+                            const isOpen = volumesContainer.style.display === 'block';
+                            volumesContainer.style.display = isOpen ? 'none' : 'block';
+                            typeSpan.textContent = (item.type || 'Материал') + (isOpen ? ' ▾' : ' ▴');
+                        };
+
+                        wrapper.appendChild(header);
+                        wrapper.appendChild(volumesContainer);
+                        container.appendChild(wrapper);
+                    } else {
+                        // ===== Обычный материал =====
+                        const div = document.createElement('div');
+                        div.className = 'material-item';
+
+                        const nameSpan = document.createElement('span');
+                        nameSpan.className = 'material-name';
+                        nameSpan.textContent = item.name;
+
+                        if (item.link) {
+                            nameSpan.classList.add('clickable');
+                            nameSpan.onclick = () => window.open(item.link, '_blank');
+                        }
+
+                        const typeSpan = document.createElement('span');
+                        typeSpan.className = 'material-type';
+                        typeSpan.textContent = item.type || 'Материал';
+
+                        div.appendChild(nameSpan);
+                        div.appendChild(typeSpan);
+                        container.appendChild(div);
+                    }
                 });
             }
 
@@ -2712,7 +2798,7 @@
         }
 
         // ================================================================
-        // 21. ЗАКРЫТИЕ МОДАЛОК ПО ESC
+        // 21. ESC
         // ================================================================
         document.addEventListener('keydown', function(e) {
             if (e.key === 'Escape') {
@@ -2742,12 +2828,10 @@
 
             render();
             updateTimerAndHighlight();
-
             setInterval(updateTimerAndHighlight, 1000);
         });
 
         console.log('✅ Страница загружена');
-        console.log(`📅 Реальная неделя: ${realWeek}, реальный день: ${dayNames[realDayIndex]}`);
     </script>
 </body>
 </html>
