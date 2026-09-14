@@ -1193,6 +1193,86 @@
             color: #b0a0e0;
         }
 
+        /* ===== СВАЙП ДНЕЙ ===== */
+        #pairsContainer {
+            touch-action: pan-y;
+            will-change: transform, opacity;
+        }
+
+        @keyframes swipeFromRight {
+            from { transform: translateX(40px); opacity: 0; }
+            to   { transform: translateX(0);    opacity: 1; }
+        }
+        @keyframes swipeFromLeft {
+            from { transform: translateX(-40px); opacity: 0; }
+            to   { transform: translateX(0);     opacity: 1; }
+        }
+
+        #pairsContainer.swipe-in-right {
+            animation: swipeFromRight 0.25s ease;
+        }
+        #pairsContainer.swipe-in-left {
+            animation: swipeFromLeft 0.25s ease;
+        }
+
+        /* ===== ДНИ РОЖДЕНИЯ ===== */
+        .birthday-soon {
+            color: #ff4d94 !important;
+            font-weight: 700;
+        }
+
+        .birthday-sticker {
+            display: inline-flex;
+            align-items: center;
+            gap: 2px;
+            margin-left: 6px;
+            font-size: 1rem;
+            line-height: 1;
+            animation: birthday-pop 0.6s ease;
+            vertical-align: middle;
+        }
+
+        .birthday-sticker .cake {
+            font-size: 1.1rem;
+        }
+
+        .birthday-sticker .confetti {
+            font-size: 0.85rem;
+            animation: confetti-bounce 1.2s ease infinite;
+        }
+
+        .birthday-sticker .confetti:nth-child(2) { animation-delay: 0.15s; }
+        .birthday-sticker .confetti:nth-child(3) { animation-delay: 0.3s; }
+
+        @keyframes birthday-pop {
+            0%   { transform: scale(0.4) rotate(-15deg); opacity: 0; }
+            60%  { transform: scale(1.2) rotate(8deg);   opacity: 1; }
+            100% { transform: scale(1) rotate(0);        opacity: 1; }
+        }
+
+        @keyframes confetti-bounce {
+            0%, 100% { transform: translateY(0); }
+            50%      { transform: translateY(-4px); }
+        }
+
+        /* Красная кнопка «Список» в день рождения */
+        .action-button.birthday-active {
+            background: #ff3b5c !important;
+            border-color: #ff3b5c !important;
+            box-shadow: 0 2px 12px rgba(255, 59, 92, 0.45) !important;
+            animation: birthday-pulse 1.6s ease infinite;
+        }
+
+        .action-button.birthday-active:hover {
+            background: #e62546 !important;
+            border-color: #e62546 !important;
+        }
+
+        @keyframes birthday-pulse {
+            0%, 100% { box-shadow: 0 2px 12px rgba(255, 59, 92, 0.45); }
+            50%      { box-shadow: 0 2px 20px rgba(255, 59, 92, 0.75); }
+        }
+
         /* ===== ВОДЯНОЙ ЗНАК ===== */
         .watermark {
             margin-top: 40px;
@@ -1410,7 +1490,7 @@
             <button class="action-button" onclick="openMap()">
                 <span class="icon">🗺️</span> Карта
             </button>
-            <button class="action-button" onclick="openGroupList()">
+            <button class="action-button" id="groupListButton" onclick="openGroupList()">
                 <span class="icon">📋</span> Список
             </button>
         </div>
@@ -1588,11 +1668,6 @@
         // ================================================================
         // 2. УЧЕБНЫЕ МАТЕРИАЛЫ
         // ================================================================
-        // Поля:
-        //   name   — название материала
-        //   type   — бейдж (Учебник / Методичка / Презентация / ...)
-        //   link   — путь к файлу или внешняя ссылка (опционально)
-        //   volumes — массив { label, link } для многотомников (опционально)
         const materialsData = [
             {
                 subject: 'Математика',
@@ -1604,27 +1679,27 @@
                 subject: 'Физика',
                 items: [
                     { name: 'График выполнения лаб', type: 'Вспомогательные', link: 'Fiz_grafik_lab.pdf' },
-                    { name: 'Экзаменационные вопросы', type: 'Вспомогательное', link: 'Fiz_examenacionye_voprosy.pdf'},
+                    { name: 'Экзаменационные вопросы', type: 'Вспомогательное', link: 'Fiz_examenacionye_voprosy.pdf' },
                     { name: 'Яндекс диск с лаб. работами', type: 'Вспомогательные', link: 'https://disk.yandex.by/d/ANeGLA2T3SQSTs' },
                     { name: 'Изучение погрешностей измерений', type: 'Методичка', link: 'Fiz_izuchenie_pogreshnostej.pdf' },
-                    { name: 'Трофимова Т.И. "Курс физики"', type: 'Учебник', link: '' },
+                    { name: 'Трофимова Т.И. "Курс физики"', type: 'Учебник' },
                     {
                         name: 'Савельев И.В. "Курс общей физики"',
                         type: 'Учебник',
                         volumes: [
-                            { label: 'Том 1. Механика. Молекулярная физика', link: '' },
-                            { label: 'Том 2. Электричество и магнетизм. Волны. Оптика', link: '' }
+                            { label: 'Том 1. Механика. Молекулярная физика' },
+                            { label: 'Том 2. Электричество и магнетизм. Волны. Оптика' }
                         ]
                     },
                     {
                         name: 'Сивухин Д.В. "Курс физики"',
                         type: 'Учебник',
                         volumes: [
-                            { label: 'Том 1. Механика', link: '' },
-                            { label: 'Том 2. Термодинамика и молекулярная физика', link: '' }
+                            { label: 'Том 1. Механика' },
+                            { label: 'Том 2. Термодинамика и молекулярная физика' }
                         ]
                     },
-                    { name: 'Фейнмановские лекции по физике', type: 'Учебник', link: '' },
+                    { name: 'Фейнмановские лекции по физике', type: 'Учебник' },
                 ]
             },
             {
@@ -1644,10 +1719,10 @@
             {
                 subject: 'Технология конструкционных материалов',
                 items: [
-                    { name: 'Комаров О.С. "Технология конструкционных материалов"', type: 'Учебник', link: '' },
-                    { name: 'Дальский А.М. "Технология конструкционных материалов"', type: 'Учебник', link: '' },
-                    { name: 'Кузьмин Б.А. "Технология металлов и конструкционных материалов"', type: 'Учебник', link: '' },
-                    { name: 'Солнцев В.П. "Металловедение и технология металлов"', type: 'Учебник', link: '' },
+                    { name: 'Комаров О.С. "Технология конструкционных материалов"', type: 'Учебник' },
+                    { name: 'Дальский А.М. "Технология конструкционных материалов"', type: 'Учебник' },
+                    { name: 'Кузьмин Б.А. "Технология металлов и конструкционных материалов"', type: 'Учебник' },
+                    { name: 'Солнцев В.П. "Металловедение и технология металлов"', type: 'Учебник' },
                 ]
             },
             {
@@ -1661,6 +1736,7 @@
         // ================================================================
         // 3. СПИСОК ГРУППЫ
         // ================================================================
+        // В поле note можно указать дату рождения в формате DD.MM.YYYY
         const groupMembers = [
             { name: 'Бамбизов Эрик Сергеевич', subgroup: '1-я', note: '' },
             { name: 'Бовтот Михаил Викторович', subgroup: '2-я', note: '' },
@@ -2446,6 +2522,147 @@
         }
 
         // ================================================================
+        // 15.1. СВАЙП ДНЕЙ
+        // ================================================================
+        let touchStartX = 0;
+        let touchStartY = 0;
+        let touchStartTime = 0;
+        let isHorizontalSwipe = null;
+
+        const SWIPE_MIN_DISTANCE = 60;
+        const SWIPE_MAX_TIME = 600;
+        const SWIPE_ANGLE_RATIO = 1.2;
+
+        function initSwipeGestures() {
+            const target = document.getElementById('pairsContainer');
+            if (!target) return;
+
+            target.addEventListener('touchstart', (e) => {
+                if (e.touches.length !== 1) return;
+                if (e.target.closest('textarea, input, button')) return;
+
+                touchStartX = e.touches[0].clientX;
+                touchStartY = e.touches[0].clientY;
+                touchStartTime = Date.now();
+                isHorizontalSwipe = null;
+            }, { passive: true });
+
+            target.addEventListener('touchmove', (e) => {
+                if (e.touches.length !== 1) return;
+                if (isHorizontalSwipe === false) return;
+
+                const dx = e.touches[0].clientX - touchStartX;
+                const dy = e.touches[0].clientY - touchStartY;
+
+                if (isHorizontalSwipe === null && (Math.abs(dx) > 10 || Math.abs(dy) > 10)) {
+                    isHorizontalSwipe = Math.abs(dx) > Math.abs(dy) * SWIPE_ANGLE_RATIO;
+                }
+            }, { passive: true });
+
+            target.addEventListener('touchend', (e) => {
+                if (isHorizontalSwipe !== true) {
+                    isHorizontalSwipe = null;
+                    return;
+                }
+
+                const dx = e.changedTouches[0].clientX - touchStartX;
+                const dy = e.changedTouches[0].clientY - touchStartY;
+                const dt = Date.now() - touchStartTime;
+
+                isHorizontalSwipe = null;
+
+                if (dt > SWIPE_MAX_TIME) return;
+                if (Math.abs(dx) < SWIPE_MIN_DISTANCE) return;
+                if (Math.abs(dy) > Math.abs(dx) * 0.7) return;
+
+                if (dx < 0) swipeDay(1);
+                else swipeDay(-1);
+            }, { passive: true });
+
+            target.addEventListener('touchcancel', () => {
+                isHorizontalSwipe = null;
+            }, { passive: true });
+        }
+
+        function swipeDay(delta) {
+            if (document.querySelector('.modal-overlay.active, .map-overlay.active')) return;
+
+            currentDayIndex += delta;
+            if (currentDayIndex < 1) currentDayIndex = 6;
+            if (currentDayIndex > 6) currentDayIndex = 1;
+
+            render();
+            updateTimerAndHighlight();
+
+            const container = document.getElementById('pairsContainer');
+            if (container) {
+                container.classList.remove('swipe-in-left', 'swipe-in-right');
+                void container.offsetWidth;
+                container.classList.add(delta > 0 ? 'swipe-in-right' : 'swipe-in-left');
+                setTimeout(() => {
+                    container.classList.remove('swipe-in-left', 'swipe-in-right');
+                }, 300);
+            }
+        }
+
+        // ================================================================
+        // 15.2. ДНИ РОЖДЕНИЯ
+        // ================================================================
+        function parseBirthday(noteStr) {
+            if (!noteStr) return null;
+            const m = String(noteStr).match(/(\d{1,2})[.\-/](\d{1,2})[.\-/](\d{2,4})/);
+            if (!m) return null;
+            const day = parseInt(m[1], 10);
+            const month = parseInt(m[2], 10) - 1;
+            const year = parseInt(m[3], 10);
+            if (day < 1 || day > 31 || month < 0 || month > 11) return null;
+            return { day, month, year };
+        }
+
+        function daysUntilBirthday(birthday) {
+            if (!birthday) return null;
+            const today = new Date();
+            today.setHours(0, 0, 0, 0);
+
+            const thisYear = today.getFullYear();
+            let next = new Date(thisYear, birthday.month, birthday.day);
+
+            if (next < today) {
+                next = new Date(thisYear + 1, birthday.month, birthday.day);
+            }
+
+            const diffMs = next - today;
+            return Math.round(diffMs / (24 * 60 * 60 * 1000));
+        }
+
+        function isBirthdayToday(noteStr) {
+            const b = parseBirthday(noteStr);
+            if (!b) return false;
+            return daysUntilBirthday(b) === 0;
+        }
+
+        function isBirthdaySoon(noteStr, maxDays = 3) {
+            const b = parseBirthday(noteStr);
+            if (!b) return false;
+            const d = daysUntilBirthday(b);
+            return d !== null && d > 0 && d <= maxDays;
+        }
+
+        function hasBirthdayTodayInGroup() {
+            return groupMembers.some(m => isBirthdayToday(m.note));
+        }
+
+        function updateGroupButtonState() {
+            const btn = document.getElementById('groupListButton');
+            if (!btn) return;
+            if (hasBirthdayTodayInGroup()) {
+                btn.classList.add('birthday-active');
+            } else {
+                btn.classList.remove('birthday-active');
+            }
+        }
+
+        // ================================================================
         // 16. КАРТА
         // ================================================================
         let mapInitialized = false;
@@ -2585,16 +2802,30 @@
         function openGroupList() {
             const tbody = document.getElementById('groupListBody');
             tbody.innerHTML = '';
+
             groupMembers.forEach((member, index) => {
                 const tr = document.createElement('tr');
+
+                const birthdayToday = isBirthdayToday(member.note);
+                const nameHtml = birthdayToday
+                    ? `${escapeHtml(member.name)}<span class="birthday-sticker"><span class="cake">🎂</span><span class="confetti">🎉</span><span class="confetti">🎉</span><span class="confetti">🎉</span></span>`
+                    : escapeHtml(member.name);
+
+                const dateText = member.note || '';
+                let noteHtml = dateText ? escapeHtml(dateText) : '—';
+                if (isBirthdaySoon(member.note)) {
+                    noteHtml = `<span class="birthday-soon">${noteHtml}</span>`;
+                }
+
                 tr.innerHTML = `
                     <td>${index + 1}</td>
-                    <td>${member.name}</td>
-                    <td><span class="subgroup-tag">${member.subgroup}</span></td>
-                    <td>${member.note || '—'}</td>
+                    <td>${nameHtml}</td>
+                    <td><span class="subgroup-tag">${escapeHtml(member.subgroup)}</span></td>
+                    <td>${noteHtml}</td>
                 `;
                 tbody.appendChild(tr);
             });
+
             document.getElementById('groupListOverlay').classList.add('active');
             document.body.style.overflow = 'hidden';
         }
@@ -2644,7 +2875,6 @@
             const title = document.getElementById('materialsTitle');
             body.innerHTML = '';
 
-            // ===== Список предметов =====
             if (!currentMaterialSubject) {
                 title.textContent = '📚 Учебные материалы';
 
@@ -2673,7 +2903,6 @@
                 return;
             }
 
-            // ===== Материалы предмета =====
             const subjectData = materialsData.find(m => m.subject === currentMaterialSubject);
             if (!subjectData) {
                 currentMaterialSubject = null;
@@ -2699,7 +2928,6 @@
                 container.innerHTML = `<div class="materials-empty">📭 Материалов пока нет</div>`;
             } else {
                 subjectData.items.forEach(item => {
-                    // ===== Многотомник =====
                     if (item.volumes && item.volumes.length > 0) {
                         const wrapper = document.createElement('div');
                         wrapper.className = 'material-with-volumes';
@@ -2756,7 +2984,6 @@
                         wrapper.appendChild(volumesContainer);
                         container.appendChild(wrapper);
                     } else {
-                        // ===== Обычный материал =====
                         const div = document.createElement('div');
                         div.className = 'material-item';
 
@@ -2829,6 +3056,9 @@
             render();
             updateTimerAndHighlight();
             setInterval(updateTimerAndHighlight, 1000);
+
+            initSwipeGestures();
+            updateGroupButtonState();
         });
 
         console.log('✅ Страница загружена');
