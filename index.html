@@ -1107,6 +1107,23 @@
             border-bottom-color: #b0a0e0;
         }
 
+        /* ===== МАТЕРИАЛ СО ССЫЛКОЙ — ЗЕЛЁНЫЙ ===== */
+        .material-name.has-link {
+            color: #00b894;
+            font-weight: 600;
+        }
+        .material-name.has-link.clickable:hover {
+            color: #00a383;
+            border-bottom-color: #00a383;
+        }
+        body.dark .material-name.has-link {
+            color: #6cce7a;
+        }
+        body.dark .material-name.has-link.clickable:hover {
+            color: #8ee09c;
+            border-bottom-color: #8ee09c;
+        }
+
         .volume-count {
             font-size: 0.7rem;
             color: #6c5ce7;
@@ -1193,6 +1210,28 @@
             color: #b0a0e0;
         }
 
+        /* Том со ссылкой — зелёный */
+        .volume-item.has-link .volume-label {
+            color: #00b894;
+            font-weight: 600;
+        }
+        body.dark .volume-item.has-link .volume-label {
+            color: #6cce7a;
+        }
+        .volume-item:not(.has-link) {
+            cursor: default;
+        }
+        .volume-item:not(.has-link):hover {
+            background: transparent;
+        }
+        body.dark .volume-item:not(.has-link):hover {
+            background: transparent;
+        }
+        .volume-item:not(.has-link) .volume-open {
+            color: #b2bec3;
+            opacity: 0.5;
+        }
+
         /* ===== СВАЙП ДНЕЙ ===== */
         #pairsContainer {
             touch-action: pan-y;
@@ -1255,7 +1294,6 @@
             50%      { transform: translateY(-4px); }
         }
 
-        /* Красная кнопка «Список» в день рождения */
         .action-button.birthday-active {
             background: #ff3b5c !important;
             border-color: #ff3b5c !important;
@@ -1736,7 +1774,6 @@
         // ================================================================
         // 3. СПИСОК ГРУППЫ
         // ================================================================
-        // В поле note можно указать дату рождения в формате DD.MM.YYYY
         const groupMembers = [
             { name: 'Бамбизов Эрик Сергеевич', subgroup: '1-я', note: '' },
             { name: 'Бовтот Михаил Викторович', subgroup: '2-я', note: '' },
@@ -2928,6 +2965,7 @@
                 container.innerHTML = `<div class="materials-empty">📭 Материалов пока нет</div>`;
             } else {
                 subjectData.items.forEach(item => {
+                    // ===== Многотомник =====
                     if (item.volumes && item.volumes.length > 0) {
                         const wrapper = document.createElement('div');
                         wrapper.className = 'material-with-volumes';
@@ -2940,11 +2978,13 @@
                         nameSpan.innerHTML = `${escapeHtml(item.name)} <span class="volume-count">(${item.volumes.length} т.)</span>`;
 
                         if (item.link) {
-                            nameSpan.classList.add('clickable');
+                            nameSpan.classList.add('clickable', 'has-link');
                             nameSpan.onclick = (e) => {
                                 e.stopPropagation();
                                 window.open(item.link, '_blank');
                             };
+                        } else if (item.volumes.some(v => v.link && v.link !== '#')) {
+                            nameSpan.classList.add('has-link');
                         }
 
                         const typeSpan = document.createElement('span');
@@ -2961,13 +3001,17 @@
                         item.volumes.forEach(vol => {
                             const volDiv = document.createElement('div');
                             volDiv.className = 'volume-item';
+
+                            const hasVolLink = vol.link && vol.link !== '#';
+                            if (hasVolLink) volDiv.classList.add('has-link');
+
                             volDiv.innerHTML = `
                                 <span class="volume-label">📖 ${escapeHtml(vol.label)}</span>
                                 <span class="volume-open">Открыть ›</span>
                             `;
                             volDiv.onclick = (e) => {
                                 e.stopPropagation();
-                                if (vol.link && vol.link !== '#') {
+                                if (hasVolLink) {
                                     window.open(vol.link, '_blank');
                                 }
                             };
@@ -2984,6 +3028,7 @@
                         wrapper.appendChild(volumesContainer);
                         container.appendChild(wrapper);
                     } else {
+                        // ===== Обычный материал =====
                         const div = document.createElement('div');
                         div.className = 'material-item';
 
@@ -2992,7 +3037,7 @@
                         nameSpan.textContent = item.name;
 
                         if (item.link) {
-                            nameSpan.classList.add('clickable');
+                            nameSpan.classList.add('clickable', 'has-link');
                             nameSpan.onclick = () => window.open(item.link, '_blank');
                         }
 
