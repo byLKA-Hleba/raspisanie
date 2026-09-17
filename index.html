@@ -1901,8 +1901,8 @@
         // ================================================================
         function updateTimerAndHighlight() {
             const now = new Date();
-            const currentMinutes = now.getHours() * 60 + now.getMinutes();
             const todayIndex = now.getDay();
+            const nowSeconds = now.getHours() * 3600 + now.getMinutes() * 60 + now.getSeconds();
 
             const timerDisplay = document.getElementById('timerDisplay');
             const timerLabel = document.getElementById('timerLabel');
@@ -1910,53 +1910,42 @@
             const timerSubLabel = document.getElementById('timerSubLabel');
             const timerSubDisplay = document.getElementById('timerSubDisplay');
 
-            // ===== ВОСКРЕСЕНЬЕ =====
-            if (todayIndex === 0) {
-                timerDisplay.className = 'timer-display weekend';
-                timerSubRow.style.display = 'none';
+            function fmt(seconds) {
+                const s = Math.max(0, Math.floor(seconds));
+                const h = Math.floor(s / 3600);
+                const m = Math.floor((s % 3600) / 60);
+                const sec = s % 60;
+                return `${String(h).padStart(2, '0')}:${String(m).padStart(2, '0')}:${String(sec).padStart(2, '0')}`;
+            }
+
+            function clearHighlight() {
                 document.querySelectorAll('.pair-card.current, .pair-card.next').forEach(el => {
                     el.classList.remove('current', 'next');
                 });
+            }
 
-                const weekData = schedule[realWeek];
-                if (weekData) {
-                    const mondayPairs = weekData['Понедельник'] || [];
-                    if (mondayPairs.length > 0) {
-                        const firstPair = mondayPairs[0];
-                        const [start] = firstPair.time.split(' – ');
-                        const [startH, startM] = start.split(':').map(Number);
+            function getFirstPairOfDay(dayIdx) {
+                const pairs = weekData[dayNames[dayIdx]] || [];
+                if (pairs.length === 0) return null;
+                const grouped = {};
+                pairs.forEach(p => {
+                    if (!grouped[p.time]) grouped[p.time] = [];
+                    grouped[p.time].push(p);
+                });
+                const times = Object.keys(grouped).sort();
+                const t = times[0];
+                const [start] = t.split(' – ');
+                const [h, m] = start.split(':').map(Number);
+                return { time: t, slot: grouped[t], startSec: h * 3600 + m * 60 };
+            }
 
-                        const now2 = new Date();
-                        const monday = new Date(now2);
-                        const daysUntilMonday = (1 + 7 - now2.getDay()) % 7 || 7;
-                        monday.setDate(now2.getDate() + daysUntilMonday);
-                        monday.setHours(startH, startM, 0, 0);
-
-                        const diffSeconds = Math.floor((monday - now2) / 1000);
-
-                        if (diffSeconds > 0 && diffSeconds <= MAX_WAIT_SECONDS) {
-                            const hours = Math.floor(diffSeconds / 3600);
-                            const mins = Math.floor((diffSeconds % 3600) / 60);
-                            const secs = diffSeconds % 60;
-                            timerLabel.innerHTML = '😴 Сегодня выходной<br>⏳ До следующей пары:';
-                            timerDisplay.textContent = `${String(hours).padStart(2, '0')}:${String(mins).padStart(2, '0')}:${String(secs).padStart(2, '0')}`;
-                            timerDisplay.className = 'timer-display waiting';
-                        } else {
-                            timerLabel.textContent = '😴 Сегодня выходной';
-                            timerDisplay.textContent = '😴';
-                            timerDisplay.className = 'timer-display weekend';
-                        }
-                    } else {
-                        timerLabel.textContent = '😴 Сегодня выходной';
-                        timerDisplay.textContent = '😴';
-                        timerDisplay.className = 'timer-display weekend';
-                    }
-                } else {
-                    timerLabel.textContent = '😴 Сегодня выходной';
-                    timerDisplay.textContent = '😴';
-                    timerDisplay.className = 'timer-display weekend';
+            function findNextStudyDay() {
+                for (let offset = 1; offset <= 7; offset++) {
+                    const dayIdx = (todayIndex + offset) % 7;
+                    const found = getFirstPairOfDay(dayIdx);
+                    if (found) return { dayOffset: offset, dayIdx, ...found };
                 }
-                return;
+                return null;
             }
 
             const weekData = schedule[realWeek];
@@ -1968,137 +1957,124 @@
                 return;
             }
 
-            const dayName = dayNames[todayIndex];
-            const pairs = weekData[dayName] || [];
-
-            const groupedByTime = {};
-            pairs.forEach(pair => {
-                if (!groupedByTime[pair.time]) groupedByTime[pair.time] = [];
-                groupedByTime[pair.time].push(pair);
-            });
-
-            const timeKeys = Object.keys(groupedByTime).sort();
-
-            if (timeKeys.length === 0) {
-                timerDisplay.textContent = '😌';
-                timerDisplay.className = 'timer-display done';
-                timerLabel.textContent = 'Пар нет';
+            // ===== ВОСКРЕСЕНЬЕ =====
+            if (todayIndex === 0) {
+                clearHighlight();
+                const next = findNextStudyDay();
+                if (next) {
+                    const secsUntilMidnight = 24 * 3600 - nowSeconds;
+                    const secsUntilNext = secsUntilMidnight + (next.dayOffset - 1) * 24 * 3600 + next.startSec;
+                    if (secsUntilNext > 0 && secsUntilNext <= MAX_WAIT_SECONDS) {
+                        timerLabel.innerHTML = '😴 Сегодня выходной<br>⏳ До следующей пары:';
+                        timerDisplay.textContent = fmt(secsUntilNext);
+                        timerDisplay.className = 'timer-display waiting';
+                    } else {
+                        timerLabel.textContent = '😴 Сегодня выходной';
+                        timerDisplay.textContent = '😴';
+                        timerDisplay.className = 'timer-display weekend';
+                    }
+                } else {
+                    timerLabel.textContent = '😴 Сегодня выходной';
+                    timerDisplay.textContent = '😴';
+                    timerDisplay.className = 'timer-display weekend';
+                }
                 timerSubRow.style.display = 'none';
-                document.querySelectorAll('.pair-card.current, .pair-card.next').forEach(el => {
-                    el.classList.remove('current', 'next');
-                });
                 return;
             }
 
-            let currentSlot = null;
-            let nextSlot = null;
-            let currentTime = null;
-            let nextTime = null;
-
-            for (const time of timeKeys) {
-                const [start, end] = time.split(' – ');
-                const [startH, startM] = start.split(':').map(Number);
-                const [endH, endM] = end.split(':').map(Number);
-                const startTotal = startH * 60 + startM;
-                const endTotal = endH * 60 + endM;
-
-                if (currentMinutes >= startTotal && currentMinutes < endTotal) {
-                    currentSlot = groupedByTime[time];
-                    currentTime = time;
-                    break;
-                }
-                if (currentMinutes < startTotal && !nextSlot) {
-                    nextSlot = groupedByTime[time];
-                    nextTime = time;
-                }
-            }
-
-            if (currentSlot && !nextSlot) {
-                const currentIndex = timeKeys.indexOf(currentTime);
-                if (currentIndex < timeKeys.length - 1) {
-                    nextSlot = groupedByTime[timeKeys[currentIndex + 1]];
-                    nextTime = timeKeys[currentIndex + 1];
-                }
-            }
-
-            document.querySelectorAll('.pair-card.current, .pair-card.next').forEach(el => {
-                el.classList.remove('current', 'next');
+            // ===== БУДНИЙ ДЕНЬ =====
+            const todayPairs = weekData[dayNames[todayIndex]] || [];
+            const groupedToday = {};
+            todayPairs.forEach(p => {
+                if (!groupedToday[p.time]) groupedToday[p.time] = [];
+                groupedToday[p.time].push(p);
             });
+            const todayTimes = Object.keys(groupedToday).sort();
 
-            const isTodayView = (currentDayIndex === realDayIndex && currentWeek === realWeek);
-            const nowSeconds = now.getHours() * 3600 + now.getMinutes() * 60 + now.getSeconds();
+            let currentSlot = null, currentTime = null;
+            let todayNextSlot = null, todayNextTime = null;
 
-            function formatTime(seconds) {
-                const h = Math.floor(seconds / 3600);
-                const m = Math.floor((seconds % 3600) / 60);
-                const s = Math.floor(seconds % 60);
-                return { hours: h, mins: m, secs: s };
+            for (const t of todayTimes) {
+                const [start, end] = t.split(' – ');
+                const [sH, sM] = start.split(':').map(Number);
+                const [eH, eM] = end.split(':').map(Number);
+                const startSec = sH * 3600 + sM * 60;
+                const endSec = eH * 3600 + eM * 60;
+
+                if (nowSeconds >= startSec && nowSeconds < endSec) {
+                    currentSlot = groupedToday[t];
+                    currentTime = t;
+                }
+                if (nowSeconds < startSec && !todayNextSlot) {
+                    todayNextSlot = groupedToday[t];
+                    todayNextTime = t;
+                }
             }
+
+            clearHighlight();
+            const isTodayView = (currentDayIndex === realDayIndex && currentWeek === realWeek);
 
             // ===== ИДЁТ ПАРА =====
             if (currentSlot) {
-                const [start, end] = currentTime.split(' – ');
-                const [endH, endM] = end.split(':').map(Number);
-                const endSeconds = endH * 3600 + endM * 60;
-                const remain = endSeconds - nowSeconds;
-                const t = formatTime(remain);
+                const [, end] = currentTime.split(' – ');
+                const [eH, eM] = end.split(':').map(Number);
+                const endSec = eH * 3600 + eM * 60;
 
-                timerDisplay.textContent = `${String(t.hours).padStart(2, '0')}:${String(t.mins).padStart(2, '0')}:${String(t.secs).padStart(2, '0')}`;
+                timerDisplay.textContent = fmt(endSec - nowSeconds);
                 timerDisplay.className = 'timer-display ongoing';
-                timerLabel.textContent = `До конца пары:`;
-
+                timerLabel.textContent = 'До конца пары:';
                 if (isTodayView) highlightPairsByTime(currentTime, 'current');
 
-                if (nextSlot) {
-                    const [nextStart] = nextTime.split(' – ');
-                    const [nextH, nextM] = nextStart.split(':').map(Number);
-                    const nextStartSeconds = nextH * 3600 + nextM * 60;
-                    const wait = nextStartSeconds - nowSeconds;
-
-                    if (wait > 0 && wait <= MAX_WAIT_SECONDS) {
-                        const wt = formatTime(wait);
-                        timerSubRow.style.display = 'flex';
-                        timerSubLabel.textContent = 'До начала следующей пары:';
-                        timerSubDisplay.textContent = `${String(wt.hours).padStart(2, '0')}:${String(wt.mins).padStart(2, '0')}:${String(wt.secs).padStart(2, '0')}`;
-                        timerSubDisplay.className = 'timer-sub-display waiting';
-                    } else {
-                        timerSubRow.style.display = 'none';
-                    }
+                if (todayNextSlot) {
+                    const [start] = todayNextTime.split(' – ');
+                    const [sH, sM] = start.split(':').map(Number);
+                    const startSec = sH * 3600 + sM * 60;
+                    timerSubLabel.textContent = 'До начала следующей пары:';
+                    timerSubDisplay.textContent = fmt(startSec - nowSeconds);
+                    timerSubDisplay.className = 'timer-sub-display waiting';
+                    timerSubRow.style.display = 'flex';
+                    if (isTodayView) highlightPairsByTime(todayNextTime, 'next');
                 } else {
                     timerSubRow.style.display = 'none';
                 }
                 return;
             }
 
-            // ===== ПАРЫ НЕТ, НО ЕСТЬ СЛЕДУЮЩАЯ =====
-            if (nextSlot) {
-                const [nextStart] = nextTime.split(' – ');
-                const [nextH, nextM] = nextStart.split(':').map(Number);
-                const nextStartSeconds = nextH * 3600 + nextM * 60;
-                let wait = nextStartSeconds - nowSeconds;
-                if (wait < 0) wait += 24 * 3600;
-
-                if (wait > 0 && wait <= MAX_WAIT_SECONDS) {
-                    const wt = formatTime(wait);
-                    timerLabel.innerHTML = '✅ Все пары закончились<br>⏳ До следующей пары:';
-                    timerDisplay.textContent = `${String(wt.hours).padStart(2, '0')}:${String(wt.mins).padStart(2, '0')}:${String(wt.secs).padStart(2, '0')}`;
-                    timerDisplay.className = 'timer-display waiting';
-                    timerSubRow.style.display = 'none';
-
-                    if (isTodayView) highlightPairsByTime(nextTime, 'next');
-                } else {
-                    timerLabel.textContent = 'Все пары закончились';
-                    timerDisplay.textContent = '✅';
-                    timerDisplay.className = 'timer-display done';
-                    timerSubRow.style.display = 'none';
-                }
+            // ===== ПАРА ЕЩЁ НЕ НАЧАЛАСЬ =====
+            if (todayNextSlot) {
+                const [start] = todayNextTime.split(' – ');
+                const [sH, sM] = start.split(':').map(Number);
+                const startSec = sH * 3600 + sM * 60;
+                timerDisplay.textContent = fmt(startSec - nowSeconds);
+                timerDisplay.className = 'timer-display waiting';
+                timerLabel.textContent = 'До начала следующей пары:';
+                timerSubRow.style.display = 'none';
+                if (isTodayView) highlightPairsByTime(todayNextTime, 'next');
                 return;
             }
 
-            // ===== ПАР БОЛЬШЕ НЕТ ВООБЩЕ =====
-            timerLabel.textContent = 'Все пары закончились';
-            timerDisplay.textContent = '✅';
-            timerDisplay.className = 'timer-display done';
+            // ===== СЕГОДНЯ ПАР БОЛЬШЕ НЕТ =====
+            const next = findNextStudyDay();
+            if (!next) {
+                timerDisplay.textContent = '✅';
+                timerDisplay.className = 'timer-display done';
+                timerLabel.textContent = 'Все пары закончились';
+                timerSubRow.style.display = 'none';
+                return;
+            }
+
+            const secsUntilMidnight = 24 * 3600 - nowSeconds;
+            const secsUntilNext = secsUntilMidnight + (next.dayOffset - 1) * 24 * 3600 + next.startSec;
+
+            if (secsUntilNext <= MAX_WAIT_SECONDS) {
+                timerLabel.innerHTML = '✅ Все пары закончились<br>⏳ До следующей пары:';
+                timerDisplay.textContent = fmt(secsUntilNext);
+                timerDisplay.className = 'timer-display waiting';
+            } else {
+                timerLabel.textContent = 'Все пары закончились';
+                timerDisplay.textContent = '✅';
+                timerDisplay.className = 'timer-display done';
+            }
             timerSubRow.style.display = 'none';
         }
 
@@ -2870,7 +2846,6 @@
                 const birthdayToday = isBirthdayToday(member.note);
                 const birthdaySoon = isBirthdaySoon(member.note, 3);
 
-                // Имя: в день рождения — тот же цвет, что и за 1–3 дня, плюс стикеры
                 let nameHtml;
                 if (birthdayToday) {
                     nameHtml = `<span class="birthday-name-today">${escapeHtml(member.name)}</span><span class="birthday-sticker"><span class="cake">🎂</span><span class="confetti">🎉</span><span class="confetti">🎉</span><span class="confetti">🎉</span></span>`;
@@ -2880,7 +2855,6 @@
                     nameHtml = escapeHtml(member.name);
                 }
 
-                // Дата: в день рождения — тот же цвет, что и за 1–3 дня
                 const dateText = member.note || '';
                 let noteHtml = dateText ? escapeHtml(dateText) : '—';
                 if (birthdayToday) {
