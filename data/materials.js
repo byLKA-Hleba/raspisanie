@@ -1,6 +1,7 @@
 // ================================================================
 // УЧЕБНЫЕ МАТЕРИАЛЫ
 // ================================================================
+
 const materialsData = [
     {
         subject: 'Математика',
@@ -10,37 +11,52 @@ const materialsData = [
     },
     {
         subject: 'Физика',
-        items: [
-            { name: 'График выполнения лаб', type: 'Вспомогательные', link: 'Fiz_grafik_lab.pdf' },
-            { name: 'Экзаменационные вопросы', type: 'Вспомогательное', link: 'Fiz_examenacionye_voprosy.pdf' },
-            { name: 'Яндекс диск с лаб. работами', type: 'Вспомогательные', link: 'https://disk.yandex.by/d/ANeGLA2T3SQSTs' },
-            { name: 'Изучение погрешностей измерений', type: 'Методичка', link: 'Fiz_izuchenie_pogreshnostej.pdf' },
-            { name: 'Трофимова Т.И. "Курс физики"', type: 'Учебник' },
+        subgroups: [
             {
-                name: 'Савельев И.В. "Курс общей физики"',
-                type: 'Учебник',
-                volumes: [
-                    { label: 'Том 1. Механика. Молекулярная физика' },
-                    { label: 'Том 2. Электричество и магнетизм. Волны. Оптика' }
+                name: 'Лабораторные',
+                items: [
+                    { name: 'График выполнения лаб', type: 'Вспомогательные', link: 'materials/physics/Fiz_grafik_lab.pdf' },
+                    { name: 'Изучение погрешностей измерений', type: 'Методичка', link: 'materials/physics/Fiz_izuchenie_pogreshnostej.pdf' },
+                    { name: 'Яндекс диск с лаб. работами', type: 'Вспомогательные', link: 'https://disk.yandex.by/d/ANeGLA2T3SQSTs' },
                 ]
             },
             {
-                name: 'Сивухин Д.В. "Курс физики"',
-                type: 'Учебник',
-                volumes: [
-                    { label: 'Том 1. Механика' },
-                    { label: 'Том 2. Термодинамика и молекулярная физика' }
+                name: 'Практика',
+                items: [
+                    { name: 'Экзаменационные вопросы', type: 'Вспомогательное', link: 'materials/physics/Fiz_examenacionye_voprosy.pdf' },
                 ]
             },
-            { name: 'Фейнмановские лекции по физике', type: 'Учебник' },
+            {
+                name: 'Лекции',
+                items: [
+                    { name: 'Трофимова Т.И. "Курс физики"', type: 'Учебник' },
+                    {
+                        name: 'Савельев И.В. "Курс общей физики"',
+                        type: 'Учебник',
+                        volumes: [
+                            { label: 'Том 1. Механика. Молекулярная физика' },
+                            { label: 'Том 2. Электричество и магнетизм. Волны. Оптика' }
+                        ]
+                    },
+                    {
+                        name: 'Сивухин Д.В. "Курс физики"',
+                        type: 'Учебник',
+                        volumes: [
+                            { label: 'Том 1. Механика' },
+                            { label: 'Том 2. Термодинамика и молекулярная физика' }
+                        ]
+                    },
+                    { name: 'Фейнмановские лекции по физике', type: 'Учебник' },
+                ]
+            }
         ]
     },
     {
         subject: 'Химия',
         items: [
-            { name: 'Номера ИДЗ', type: 'Вспомогательные', link: 'Xim_nomera_idz.pdf' },
-            { name: 'Задания ИДЗ. Гл1-4', type: 'Вспомогательные', link: 'Xim_zadanya_idz.pdf' },
-            { name: 'Гл1. Основные классы неорганических соединений', type: 'Презентация', link: 'Xim_1_osn_klas_neorg_soedinenyi.ppt' },
+            { name: 'Номера ИДЗ', type: 'Вспомогательные', link: 'materials/chemistry/Xim_nomera_idz.pdf' },
+            { name: 'Задания ИДЗ. Гл1-4', type: 'Вспомогательные', link: 'materials/chemistry/Xim_zadanya_idz.pdf' },
+            { name: 'Гл1. Основные классы неорганических соединений', type: 'Презентация', link: 'materials/chemistry/Xim_1_osn_klas_neorg_soedinenyi.ppt' },
         ]
     },
     {
@@ -61,7 +77,7 @@ const materialsData = [
     {
         subject: 'Английский язык',
         items: [
-            { name: 'Механика. Английский для студентов-машиностроителей', type: 'Учебник', link: 'Mekhanika_Anglijskij_dlya_studentov-mashinostroitelej.pdf' },
+            { name: 'Механика. Английский для студентов-машиностроителей', type: 'Учебник', link: 'materials/english/Mekhanika_Anglijskij_dlya_studentov-mashinostroitelej.pdf' },
         ]
     }
 ];
