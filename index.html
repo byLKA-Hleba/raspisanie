@@ -1232,6 +1232,76 @@
             opacity: 0.5;
         }
 
+        /* ===== ПОДКАТЕГОРИИ МАТЕРИАЛОВ ===== */
+        .subgroup-list {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .subgroup-list-item {
+            padding: 12px 16px;
+            background: white;
+            border: 1px solid #dfe6e9;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: 0.2s;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            color: #2d3436;
+            font-weight: 600;
+            font-size: 0.9rem;
+        }
+
+        .subgroup-list-item:hover {
+            border-color: #6c5ce7;
+            background: #f8f7ff;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(108, 92, 231, 0.1);
+        }
+
+        .subgroup-list-item .count {
+            font-size: 0.75rem;
+            color: #b2bec3;
+            font-weight: 500;
+            margin-left: 8px;
+        }
+
+        body.dark .subgroup-list-item {
+            background: #2d2d44;
+            border-color: #3d3d5a;
+            color: #e0e0e0;
+        }
+        body.dark .subgroup-list-item:hover {
+            background: #3d3d5a;
+            border-color: #6c5ce7;
+        }
+
+        .materials-breadcrumb {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 0.8rem;
+            color: #b2bec3;
+            margin-bottom: 12px;
+            flex-wrap: wrap;
+        }
+        .materials-breadcrumb .crumb {
+            cursor: pointer;
+            color: #6c5ce7;
+            transition: 0.2s;
+        }
+        .materials-breadcrumb .crumb:hover {
+            color: #5a4bd1;
+            text-decoration: underline;
+        }
+        .materials-breadcrumb .crumb.current {
+            color: #b2bec3;
+            cursor: default;
+            text-decoration: none;
+        }
+
         /* ===== СВАЙП ДНЕЙ ===== */
         #pairsContainer {
             touch-action: pan-y;
@@ -2691,16 +2761,19 @@
         }
 
         // ================================================================
-        // 20. УЧЕБНЫЕ МАТЕРИАЛЫ
+        // 20. УЧЕБНЫЕ МАТЕРИАЛЫ (с поддержкой подкатегорий)
         // ================================================================
         let currentMaterialSubject = null;
+        let currentMaterialSubgroup = null;
 
         function renderMaterials() {
             const body = document.getElementById('materialsBody');
             const title = document.getElementById('materialsTitle');
             body.innerHTML = '';
 
+            // ===== Список предметов =====
             if (!currentMaterialSubject) {
+                currentMaterialSubgroup = null;
                 title.textContent = '📚 Учебные материалы';
 
                 const container = document.createElement('div');
@@ -2718,6 +2791,7 @@
                         `;
                         div.onclick = () => {
                             currentMaterialSubject = subject.subject;
+                            currentMaterialSubgroup = null;
                             renderMaterials();
                         };
                         container.appendChild(div);
@@ -2731,17 +2805,69 @@
             const subjectData = materialsData.find(m => m.subject === currentMaterialSubject);
             if (!subjectData) {
                 currentMaterialSubject = null;
+                currentMaterialSubgroup = null;
                 renderMaterials();
                 return;
             }
 
-            title.textContent = `📚 ${currentMaterialSubject}`;
+            // ===== Хлебные крошки =====
+            const breadcrumb = document.createElement('div');
+            breadcrumb.className = 'materials-breadcrumb';
+            breadcrumb.innerHTML = `
+                <span class="crumb" onclick="goBackToSubjects()">Материалы</span>
+                <span>›</span>
+                <span class="crumb ${!currentMaterialSubgroup ? 'current' : ''}"
+                      onclick="goBackToSubjects()">${escapeHtml(currentMaterialSubject)}</span>
+                ${currentMaterialSubgroup ? `<span>›</span><span class="crumb current">${escapeHtml(currentMaterialSubgroup)}</span>` : ''}
+            `;
+            body.appendChild(breadcrumb);
+
+            // ===== Список подкатегорий =====
+            if (subjectData.subgroups && !currentMaterialSubgroup) {
+                title.textContent = `📚 ${currentMaterialSubject}`;
+
+                const container = document.createElement('div');
+                container.className = 'subgroup-list';
+
+                subjectData.subgroups.forEach(sub => {
+                    const div = document.createElement('div');
+                    div.className = 'subgroup-list-item';
+                    const count = (sub.items || []).length;
+                    div.innerHTML = `
+                        <span>${escapeHtml(sub.name)}<span class="count">(${count})</span></span>
+                        <span>›</span>
+                    `;
+                    div.onclick = () => {
+                        currentMaterialSubgroup = sub.name;
+                        renderMaterials();
+                    };
+                    container.appendChild(div);
+                });
+
+                body.appendChild(container);
+                return;
+            }
+
+            // ===== Материалы текущего уровня =====
+            let items;
+            if (subjectData.subgroups && currentMaterialSubgroup) {
+                const sub = subjectData.subgroups.find(s => s.name === currentMaterialSubgroup);
+                items = sub ? sub.items : [];
+                title.textContent = `📚 ${currentMaterialSubject} · ${currentMaterialSubgroup}`;
+            } else {
+                items = subjectData.items || [];
+                title.textContent = `📚 ${currentMaterialSubject}`;
+            }
 
             const backBtn = document.createElement('button');
             backBtn.className = 'materials-back-btn';
-            backBtn.innerHTML = `<span class="back-icon">◀</span> Назад к предметам`;
+            backBtn.innerHTML = `<span class="back-icon">◀</span> Назад`;
             backBtn.onclick = () => {
-                currentMaterialSubject = null;
+                if (currentMaterialSubgroup) {
+                    currentMaterialSubgroup = null;
+                } else {
+                    currentMaterialSubject = null;
+                }
                 renderMaterials();
             };
             body.appendChild(backBtn);
@@ -2749,10 +2875,10 @@
             const container = document.createElement('div');
             container.className = 'materials-grid';
 
-            if (!subjectData.items || subjectData.items.length === 0) {
+            if (!items || items.length === 0) {
                 container.innerHTML = `<div class="materials-empty">📭 Материалов пока нет</div>`;
             } else {
-                subjectData.items.forEach(item => {
+                items.forEach(item => {
                     if (item.volumes && item.volumes.length > 0) {
                         const wrapper = document.createElement('div');
                         wrapper.className = 'material-with-volumes';
@@ -2841,8 +2967,15 @@
             body.appendChild(container);
         }
 
+        function goBackToSubjects() {
+            currentMaterialSubject = null;
+            currentMaterialSubgroup = null;
+            renderMaterials();
+        }
+
         function openMaterials() {
             currentMaterialSubject = null;
+            currentMaterialSubgroup = null;
             document.getElementById('materialsOverlay').classList.add('active');
             document.body.style.overflow = 'hidden';
             renderMaterials();
@@ -2853,6 +2986,7 @@
             document.getElementById('materialsOverlay').classList.remove('active');
             document.body.style.overflow = '';
             currentMaterialSubject = null;
+            currentMaterialSubgroup = null;
         }
 
         // ================================================================
