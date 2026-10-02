@@ -23,12 +23,13 @@ const materialsData = [
             {
                 name: 'Практика',
                 items: [
-                    { name: 'Экзаменационные вопросы', type: 'Вспомогательное', link: 'materials/physics/Fiz_examenacionye_voprosy.pdf' },
+                    { name: 'Экзаменационные вопросы', type: 'Вспомогательное', link: 'Mat/Fiz/Examenacionye_voprosy.pdf' },
                 ]
             },
             {
                 name: 'Лекции',
                 items: [
+                    { name: 'Экзаменационные вопросы', type: 'Вспомогательное', link: 'Mat/Fiz/Examenacionye_voprosy.pdf' },
                     { name: 'Трофимова Т.И. "Курс физики"', type: 'Учебник' },
                     {
                         name: 'Савельев И.В. "Курс общей физики"',
@@ -77,7 +78,8 @@ const materialsData = [
     {
         subject: 'Английский язык',
         items: [
-            { name: 'Механика. Английский для студентов-машиностроителей', type: 'Учебник', link: 'materials/english/Mekhanika_Anglijskij_dlya_studentov-mashinostroitelej.pdf' },
+            { name: 'Механика. Английский для студентов-машиностроителей', type: 'Учебник', link: 'Mat/Eng/Mekhanika_Anglijskij_dlya_studentov-mashinostroitelej.pdf' },
+            { name: 'Первый учебник', type: 'Учебник', link: 'Mat/Eng/Metodicheskoe_posobie_po_obucheniyu.pdf'}
         ]
     }
 ];
