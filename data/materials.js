@@ -6,7 +6,7 @@ const materialsData = [
     {
         subject: 'Математика',
         items: [
-            { name: '', type: '' },
+            { name: 'Сборник задач', type: '', link;'Mat/Mat/Sbornik_zadach.pdf' },
         ]
     },
     {
@@ -15,15 +15,15 @@ const materialsData = [
             {
                 name: 'Лабораторные',
                 items: [
-                    { name: 'График выполнения лаб', type: 'Вспомогательные', link: 'materials/physics/Fiz_grafik_lab.pdf' },
-                    { name: 'Изучение погрешностей измерений', type: 'Методичка', link: 'materials/physics/Fiz_izuchenie_pogreshnostej.pdf' },
+                    { name: 'График выполнения лаб', type: 'Вспомогательные', link: 'Mat/Fiz/Grafik_lab.pdf' },
+                    { name: 'Изучение погрешностей измерений', type: 'Методичка', link: 'Mat/Fiz/Izuchenie_pogreshnostej.pdf' },
                     { name: 'Яндекс диск с лаб. работами', type: 'Вспомогательные', link: 'https://disk.yandex.by/d/ANeGLA2T3SQSTs' },
                 ]
             },
             {
                 name: 'Практика',
                 items: [
-                    { name: 'Экзаменационные вопросы', type: 'Вспомогательное', link: 'Mat/Fiz/Examenacionye_voprosy.pdf' },
+                    { name: 'Старый сборник задач', type: 'Вспомогательное', link: 'Mat/Fiz/Old_volkenshtein_sbornik.pdf' },
                 ]
             },
             {
