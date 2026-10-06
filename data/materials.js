@@ -54,13 +54,33 @@ const materialsData = [
     },
     {
         subject: 'Химия',
-        items: [
-            { name: 'Номера ИДЗ', type: 'Вспомогательные', link: 'Mat/Xim/Nomera_idz.pdf' },
-            { name: 'Задания ИДЗ. Гл1-4', type: 'Вспомогательные', link: 'Mat/Xim/Zadanya_idz.pdf' },
-            { name: 'Гл1. Основные классы неорганических соединений', type: 'Презентация', link: 'Mat/Xim/1_osn_klas_neorg_soedinenyi.ppt' },
+        subgroups: [
+            {
+                name: 'Лабораторные',
+                items: [
+                    { name: 'Номера ИДЗ', type: 'Вспомогательные', link: 'Mat/Xim/Nomera_idz.pdf' },
+                    { name: 'Задания ИДЗ. Гл1-4', type: 'Вспомогательные', link: 'Mat/Xim/Zadanya_idz.pdf' },
+                ]
+            },
+            {
+                name: 'Практика',
+                items: [
+                    { name: 'Практика 1 "Основные классы неорганических веществ"', type: '', link: 'Mat/Xim/klassu_neorg_vesch_praktika.docx' },
+                    { name: 'Практика 3 "Растворы"', type: '', link: 'Mat/Xim/Rastvoru_praktika.docx' },
+                    { name: 'Практика 4 "Энергетика химических реакций"', type: '', link: 'Mat/Xim/Energetika_praktika.doc' },
+                ]
+            },
+            {
+                name: 'Лекции',
+                items: [
+                    { name: 'Гл1. Основные классы неорганических соединений', type: 'Презентация', link: 'Mat/Xim/1_osn_klas_neorg_soedinenyi.ppt' },
+                        ]
+                    },
+                ]
+            }
         ]
     },
-    {
+    
         subject: 'Инженерная графика',
         items: [
             { name: '', type: '' },
