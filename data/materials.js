@@ -57,7 +57,7 @@ const materialsData = [
         items: [
             { name: 'Номера ИДЗ', type: 'Вспомогательные', link: 'Mat/Xim/Nomera_idz.pdf' },
             { name: 'Задания ИДЗ. Гл1-4', type: 'Вспомогательные', link: 'Mat/Xim/Zadanya_idz.pdf' },
-            { name: 'Гл1. Основные классы неорганических соединений', type: 'Презентация', link: 'materials/chemistry/Xim_1_osn_klas_neorg_soedinenyi.ppt' },
+            { name: 'Гл1. Основные классы неорганических соединений', type: 'Презентация', link: 'Mat/Xim/1_osn_klas_neorg_soedinenyi.ppt' },
         ]
     },
     {
