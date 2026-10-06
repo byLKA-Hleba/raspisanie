@@ -65,15 +65,15 @@ const materialsData = [
             {
                 name: 'Практика',
                 items: [
-                    { name: 'Практика 1 "Основные классы неорганических веществ"', type: '', link: 'Mat/Xim/klassu_neorg_vesch_praktika.docx' },
-                    { name: 'Практика 3 "Растворы"', type: '', link: 'Mat/Xim/Rastvoru_praktika.docx' },
-                    { name: 'Практика 4 "Энергетика химических реакций"', type: '', link: 'Mat/Xim/Energetika_praktika.doc' },
+                    { name: 'Практика 1 "Основные классы неорганических веществ"', type: '', link: 'Mat/Xim/klassu_neorg_vesch_praktika.pdf' },
+                    { name: 'Практика 3 "Растворы"', type: '', link: 'Mat/Xim/Rastvoru_praktika.pdf' },
+                    { name: 'Практика 4 "Энергетика химических реакций"', type: '', link: 'Mat/Xim/Energetika_praktika.pdf' },
                 ]
             },
             {
                 name: 'Лекции',
                 items: [
-                    { name: 'Гл1. Основные классы неорганических соединений', type: 'Презентация', link: 'Mat/Xim/1_osn_klas_neorg_soedinenyi.ppt' },
+                    { name: 'Гл1. Основные классы неорганических соединений', type: 'Презентация', link: 'Mat/Xim/1_osn_klas_neorg_soedinenyi.pdf' },
                 ]
             }
         ]
