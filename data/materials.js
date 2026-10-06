@@ -6,7 +6,7 @@ const materialsData = [
     {
         subject: 'Математика',
         items: [
-            { name: 'Сборник задач', type: '', link:'Mat/Math/Sbornik_zadach.pdf' },
+            { name: 'Сборник задач', type: '', link: 'Mat/Math/Sbornik_zadach.pdf' },
         ]
     },
     {
@@ -74,17 +74,13 @@ const materialsData = [
                 name: 'Лекции',
                 items: [
                     { name: 'Гл1. Основные классы неорганических соединений', type: 'Презентация', link: 'Mat/Xim/1_osn_klas_neorg_soedinenyi.ppt' },
-                        ]
-                    },
                 ]
             }
         ]
     },
-    
+    {
         subject: 'Инженерная графика',
-        items: [
-            { name: '', type: '' },
-        ]
+        items: []
     },
     {
         subject: 'Технология конструкционных материалов',
@@ -99,7 +95,7 @@ const materialsData = [
         subject: 'Английский язык',
         items: [
             { name: 'Механика. Английский для студентов-машиностроителей', type: 'Учебник', link: 'Mat/Eng/Mekhanika_Anglijskij_dlya_studentov-mashinostroitelej.pdf' },
-            { name: 'Первый учебник', type: 'Учебник', link: 'Mat/Eng/Metodicheskoe_posobie_po_obucheniyu.pdf'}
+            { name: 'Первый учебник', type: 'Учебник', link: 'Mat/Eng/Metodicheskoe_posobie_po_obucheniyu.pdf' }
         ]
     }
 ];
