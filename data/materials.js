@@ -24,6 +24,7 @@ const materialsData = [
                 name: 'Практика',
                 items: [
                     { name: 'Старый сборник задач', type: 'Вспомогательное', link: 'Mat/Fiz/Old_volkenshtein_sbornik.pdf' },
+                    { name: 'Новый сборник задач дл номера 11,83', type: 'Вспомогательное', link: 'Mat/Fiz/novyi_do11,83.pdf' },
                 ]
             },
             {
