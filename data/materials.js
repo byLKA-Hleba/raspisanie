@@ -6,7 +6,7 @@ const materialsData = [
     {
         subject: 'Математика',
         items: [
-            { name: 'Сборник задач', type: '', link: 'Mat/Math/Sbornik_zadach.pdf' },
+            { name: 'Сборник задач', type: '', link: 'Mat/Math/sbornik_zadach.pdf' },
         ]
     },
     {
