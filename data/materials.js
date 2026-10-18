@@ -15,16 +15,17 @@ const materialsData = [
             {
                 name: 'Лабораторные',
                 items: [
-                    { name: 'График выполнения лаб', type: 'Вспомогательные', link: 'Mat/Fiz/Grafik_lab.pdf' },
-                    { name: 'Изучение погрешностей измерений', type: 'Методичка', link: 'Mat/Fiz/Izuchenie_pogreshnostej.pdf' },
-                    { name: 'Яндекс диск с лаб. работами', type: 'Вспомогательные', link: 'https://disk.yandex.by/d/ANeGLA2T3SQSTs' },
+                    { name: 'График выполнения лаб', link: 'Mat/Fiz/Grafik_lab.pdf' },
+                    { name: 'Изучение погрешностей измерений', link: 'Mat/Fiz/Izuchenie_pogreshnostej.pdf' },
+                    { name: 'Яндекс диск с лаб. работами', link: 'https://disk.yandex.by/d/ANeGLA2T3SQSTs' },
                 ]
             },
             {
                 name: 'Практика',
                 items: [
-                    { name: 'Старый сборник задач', type: 'Вспомогательное', link: 'Mat/Fiz/Old_volkenshtein_sbornik.pdf' },
-                    { name: 'Новый сборник задач дл номера 11,83', type: 'Вспомогательное', link: 'Mat/Fiz/novyi_do11,83.pdf' },
+                    { name: 'Старый сборник задач', link: 'Mat/Fiz/Pr/Old_volkenshtein_sbornik.pdf' },
+                    { name: 'Новый сборник задач (до номера 11,83)', link: 'Mat/Fiz/Pr/novyi_do11,83.pdf' },
+                    { name: 'Новый сборник задач (от номера 11,84)', link: 'Mat/Fiz/Pr/bw_novy-77-155.pdf' },
                 ]
             },
             {
