@@ -61,7 +61,8 @@ const materialsData = [
                 name: 'Лабораторные',
                 items: [
                     { name: 'Номера ИДЗ', type: 'Вспомогательные', link: 'Mat/Xim/Nomera_idz.pdf' },
-                    { name: 'Задания ИДЗ. Гл1-4', type: 'Вспомогательные', link: 'Mat/Xim/Zadanya_idz.pdf' },
+                    { name: 'Задания ИДЗ Гл1-4', type: 'Вспомогательные', link: 'Mat/Xim/Zadanya_idz.pdf' },
+                    { name: 'Задания ИДЗ Гл5-6', type: 'Вспомогательные', link: 'Mat/Xim/Idz_5-6.pdf' },
                 ]
             },
             {
