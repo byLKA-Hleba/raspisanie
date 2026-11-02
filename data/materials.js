@@ -85,7 +85,7 @@ const materialsData = [
     {
         subject: 'Инженерная графика',
         items: [
-            {name: 'Практикум по инженерной графике',  'link:"Mat/Inzhenernaya_grafika_Praktikum.pdf'},
+            {name: 'Практикум по инженерной графике',  link:'Mat/Inzhenernaya_grafika_Praktikum.pdf'},
         ]
     },
     {
