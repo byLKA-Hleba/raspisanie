@@ -63,6 +63,7 @@ const materialsData = [
                     { name: 'Номера ИДЗ', type: 'Вспомогательные', link: 'Mat/Xim/Nomera_idz.pdf' },
                     { name: 'Задания ИДЗ Гл1-4', type: 'Вспомогательные', link: 'Mat/Xim/Zadanya_idz.pdf' },
                     { name: 'Задания ИДЗ Гл5-6', type: 'Вспомогательные', link: 'Mat/Xim/Idz_5-6.pdf' },
+                    { name: 'Задания ИДЗ Гл7-8', type: 'Вспомогательные', link: 'Mat/Xim/IMG_3667.pdf' },
                 ]
             },
             {
@@ -83,7 +84,9 @@ const materialsData = [
     },
     {
         subject: 'Инженерная графика',
-        items: []
+        items: [
+            {name: 'Практикум по инженерной графике',  'link:"Mat/Inzhenernaya_grafika_Praktikum.pdf'},
+        ]
     },
     {
         subject: 'Технология конструкционных материалов',
