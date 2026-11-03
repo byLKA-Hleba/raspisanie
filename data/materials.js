@@ -72,6 +72,7 @@ const materialsData = [
                     { name: 'Практика 1 "Основные классы неорганических веществ"', type: '', link: 'Mat/Xim/klassu_neorg_vesch_praktika.pdf' },
                     { name: 'Практика 3 "Растворы"', type: '', link: 'Mat/Xim/Rastvoru_praktika.pdf' },
                     { name: 'Практика 4 "Энергетика химических реакций"', type: '', link: 'Mat/Xim/Energetika_praktika.pdf' },
+                    { name: 'Практика 8 "РCильные_и_слабые_электролиты_Горбунова"', type: '', link: 'Mat/Xim/Cильные_и_слабые_электролиты_Горбунова.pdf' },
                 ]
             },
             {
